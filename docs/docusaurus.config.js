@@ -22,8 +22,8 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'LeoriumDev', // Usually your GitHub org/user name.
-  projectName: 'serdec', // Usually your repo name.
+  // organizationName: 'LeoriumDev', // Usually your GitHub org/user name.
+  // projectName: 'serdec', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -83,7 +83,7 @@ const config = {
             items: [
               {
                 label: 'Tutorial',
-                to: '/',
+                to: '/serdec',
               },
             ],
           },
