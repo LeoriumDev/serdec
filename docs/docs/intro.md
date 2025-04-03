@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Serdec
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Serdec is a C library for serializing and deserializing C data.
 
 ## Getting Started
 
