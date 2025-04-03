@@ -1,0 +1,24 @@
+name: Trigger docs build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'serdec/docs/**'
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Docs Build
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: 'docs',
+              workflow_id: 'build-docs.yml',
+              ref: 'main',
+            })
+          github-token: ${{ secrets.GITHUB_TOKEN }}
