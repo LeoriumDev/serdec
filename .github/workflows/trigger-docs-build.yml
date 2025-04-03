@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'serdec/docs/**'
 
 permissions:
   actions: write
