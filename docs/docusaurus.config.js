@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Serdec',
-  tagline: 'Dinosaurs are cool',
+  tagline: 'A C library for serializing and deserializing C data.',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
