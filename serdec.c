@@ -7,3 +7,5 @@ JSON* json_create_object(void) {
     object->child = NULL;
     return object;
 }
+
+void json_free_object(JSON* object) { free(object); }
