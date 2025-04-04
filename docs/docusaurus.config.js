@@ -115,6 +115,9 @@ const config = {
         // ],
         copyright: `Copyright © ${new Date().getFullYear()} Leorium. Built with Docusaurus.`,
       },
+      colorMode: {
+        defaultMode: 'dark',
+      },
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
