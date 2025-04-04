@@ -23,7 +23,7 @@ const config = {
         docs: {
           sidebarPath: './sidebars.js',
           editUrl:
-            'https://github.com/LeoriumDev/serdec/tree/main',
+            'https://github.com/LeoriumDev/serdec/tree/main/docs',
           routeBasePath: '/'
         },
         blog: {
@@ -33,7 +33,7 @@ const config = {
             xslt: true,
           },
           editUrl:
-            'https://github.com/LeoriumDev/serdec/tree/main',
+            'https://github.com/LeoriumDev/serdec/tree/main/docs',
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
