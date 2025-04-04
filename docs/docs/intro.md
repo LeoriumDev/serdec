@@ -3,6 +3,6 @@ slug: /
 sidebar_position: 1
 ---
 
-# Serdec
+# Introduction 
 
 Serdec is a C library for serializing and deserializing C data.
