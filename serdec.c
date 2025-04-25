@@ -29,20 +29,7 @@ JSON* json_create_object(void) {
 void json_free_object(JSON* object) { free(object); }
 
 char* json_stringify(JSON* object) {
-    if (object->type == JSON_INT) {
-        char buf[100] = {};
-        sprintf(buf, "%d", object->value.int_val);
-
-        size_t total_len = strlen("{\n\08\08\08\08") + strlen(object->key) +
-                           strlen("\": ") + strlen(buf) + strlen("\n}") + 10;
-
-        char* string = malloc(total_len);
-        if (!string)
-            return NULL;
-
-        snprintf(string, total_len, "{\n"INDENT"\"%s\": %s\n}", object->key, buf);
-        return string;
-    }
+    if (object != NULL)
 
     return NULL;
 }
@@ -71,5 +58,9 @@ bool json_add_int(JSON *object, char *key, int value) {
     object->value.int_val = value;
     object->key = malloc(strlen(key) + 1);
     strcpy(object->key, key);
+
+    JSON* tmp = json_create_object();
+    object->next = tmp;
+    object = object->next;
     return true;
 }
