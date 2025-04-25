@@ -1,18 +1,38 @@
 /**
+ * Serdec - A C serialization and deserialization library
+ * Version: 1.0.0
  * Copyright (c) 2025 Leorium <contact@leorium.com>
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
 
-#include <stdbool.h>
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+
+typedef enum {
+    JSON_INT,
+    JSON_FLOAT,
+    JSON_BOOLEAN,
+    JSON_STRING
+} JSON_type;
 
 typedef struct JSON {
+    JSON_type type;
+    char* key;
+    union {
+        int int_val;
+        float fp_val;
+        bool bool_val;
+        char* str_val;
+    } value;
     struct JSON* prev;
     struct JSON* next;
     struct JSON* child;
@@ -99,7 +119,7 @@ bool json_add_array(JSON* object, const char* key, JSON_array* val);
  * Returns:
  *   false if object, key is NULL, or if memory allocation fails.
  */
-bool json_add_int(JSON* object, const char* key, int val);
+bool json_add_int(JSON* object, char* key, int val);
 
 /**
  * json_add_str() - Add a string to a JSON object
@@ -181,3 +201,5 @@ bool json_add_null(JSON* object, const char* key, const char* val);
  *   NULL if conversion fails.
  */
 JSON_array* to_json_array(char* array);
+
+bool json_write(JSON* object, char* filename);

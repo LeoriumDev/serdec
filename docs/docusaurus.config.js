@@ -113,7 +113,7 @@ const config = {
         //     ],
         //   },
         // ],
-        copyright: `Copyright © ${new Date().getFullYear()} Leorium. Built with Docusaurus.`,
+        copyright: `© ${new Date().getFullYear()} Leorium. Built with Docusaurus.`,
       },
       colorMode: {
         defaultMode: 'dark',
