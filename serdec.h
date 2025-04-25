@@ -29,7 +29,6 @@ typedef enum {
 
 typedef struct serdec_list_head {
     struct serdec_list_head* next;
-    struct serdec_list_head* child;
 } serdec_json_list_t;
 
 typedef struct serdec_json {
