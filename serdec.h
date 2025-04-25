@@ -18,17 +18,17 @@
 #include <string.h>
 
 typedef enum {
-    SERDEC_JSON_NULL,
-    SERDEC_JSON_INT,
-    SERDEC_JSON_FLOAT,
-    SERDEC_JSON_BOOLEAN,
-    SERDEC_JSON_STRING,
-    SERDEC_JSON_ARRAY,
+    SERDEC_JSON_NULL   ,
+    SERDEC_JSON_BOOL   ,
+    SERDEC_JSON_INT    ,
+    SERDEC_JSON_FLOAT  ,
+    SERDEC_JSON_STRING ,
+    SERDEC_JSON_ARRAY  ,
     SERDEC_JSON_OBJECT
 } serdec_json_type;
 
 typedef struct JSON {
-    JSON_type type;
+    serdec_json_type json_type;
     char* key;
     union {
         int int_val;
