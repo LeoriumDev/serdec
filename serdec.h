@@ -39,14 +39,14 @@ typedef struct serdec_json_list {
 
 typedef struct serdec_json {
     char* key;
+    serdec_json_type json_type;
     union {
         bool boolean_val;
         int64_t int_val;
         double float_val;
         char* string_val;
         serdec_json_list_t* children;
-    } value;
-    serdec_json_type json_type;
+    } value; 
     struct serdec_json* next;
 } serdec_json_t;
 
