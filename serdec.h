@@ -18,8 +18,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#define sj_new_obj serdec_json_new_object
-#define sj_stringify serdec_json_stringify
+#define sjson_new_obj serdec_json_new_object
+#define sjson_stringify serdec_json_stringify
+// #define sjson_free serdec_json_free
 
 typedef enum {
     SERDEC_JSON_NULL,
@@ -51,4 +52,7 @@ typedef struct serdec_json {
 } serdec_json_t;
 
 serdec_json_t* serdec_json_new_object(void);
-char* json_stringify(serdec_json_t* node);
+char* serdec_json_stringify(serdec_json_t* node);
+bool serdec_json_add_int(serdec_json_t* node, const char* key, int64_t value);
+void serdec_json_free(serdec_json_t* root);
+bool serdec_json_list_append(serdec_json_list_t* list, serdec_json_t* value);
