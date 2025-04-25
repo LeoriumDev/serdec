@@ -27,12 +27,10 @@ typedef enum {
     SERDEC_JSON_OBJECT
 } serdec_json_type;
 
-typedef struct serdec_list_head serdec_json_list_t;
-
-struct serdec_list_head {
-    serdec_json_list_t* next;
-    serdec_json_list_t* child;
-};
+typedef struct serdec_list_head {
+    struct serdec_list_head* next;
+    struct serdec_list_head* child;
+} serdec_json_list_t;
 
 typedef struct serdec_json {
     serdec_json_type json_type;
