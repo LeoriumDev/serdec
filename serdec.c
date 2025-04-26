@@ -64,14 +64,12 @@ serdec_json_t* serdec_json_new_bool(bool value) {
 
 }
 serdec_json_t* serdec_json_new_int(int64_t value) {
-    serdec_json_t* node = malloc(sizeof(serdec_json_t));
+    serdec_json_t* node = serdec_json_new_node();
     if (!node)
         return NULL;
 
-    node->key = NULL;
     node->json_type = SERDEC_JSON_INT;
     node->value.int_val = value;
-    node->next = NULL;
     return node;
 }
 
