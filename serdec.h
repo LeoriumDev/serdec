@@ -52,6 +52,7 @@ typedef struct serdec_json_list  serdec_json_list_t;
 typedef struct serdec_json_array serdec_json_array_t;
 typedef struct serdec_json       serdec_json_t;
 
+/* JSON object creation functions */
 serdec_json_t* serdec_json_new_null   (void);
 serdec_json_t* serdec_json_new_bool   (bool value);
 serdec_json_t* serdec_json_new_int    (int64_t value);
@@ -60,6 +61,7 @@ serdec_json_t* serdec_json_new_string (const char* string);
 serdec_json_t* serdec_json_new_array  (void);
 serdec_json_t* serdec_json_new_object (void);
 
+/* JSON object field appending functions */
 bool serdec_json_add_null   (serdec_json_t* object, const char* key, void* null);
 bool serdec_json_add_bool   (serdec_json_t* object, const char* key, bool value);
 bool serdec_json_add_int    (serdec_json_t* object, const char* key, int64_t value);
@@ -67,7 +69,6 @@ bool serdec_json_add_float  (serdec_json_t* object, const char* key, double valu
 bool serdec_json_add_string (serdec_json_t* object, const char* key, const char* value);
 bool serdec_json_add_array  (serdec_json_t* object, const char* key, serdec_json_array_t* value);
 bool serdec_json_add_object (serdec_json_t* object, const char* key, serdec_json_t* value);
-
 bool serdec_json_array_add  (serdec_json_array_t* array, serdec_json_t* value);
 
 #if __STDC_VERSION__ >= 201112L
@@ -87,9 +88,9 @@ bool serdec_json_array_add  (serdec_json_array_t* array, serdec_json_t* value);
     )(object, key, value)
 #endif
 
-char* serdec_json_stringify(serdec_json_t* node);
-serdec_json_t* serdec_json_parse(const char* json_string);
-void serdec_json_free(serdec_json_t* node);
+char*          serdec_json_stringify (serdec_json_t* node);
+serdec_json_t* serdec_json_parse     (const char* json_string);
+void           serdec_json_free      (serdec_json_t* node);
 
 #ifdef __cplusplus
 }
