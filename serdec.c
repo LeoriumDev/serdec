@@ -340,7 +340,7 @@ char* serdec_json_stringify(serdec_json_t* object) {
 }
 
 serdec_json_t* serdec_json_parse(const char* json_string) {
-
+    return NULL;
 }
 
 void serdec_json_free(serdec_json_t* node) {
