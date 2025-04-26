@@ -165,16 +165,7 @@ bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
 
     strcpy(new_node->key, key);
 
-    serdec_json_list_t* list = object->value.children;
-    if (!list->head) {
-        list->head = list->tail = new_node;
-    } else {
-        list->tail->next = new_node;
-        list->tail = new_node;
-    }
-
-    list->length++;
-    return true;
+    return serdec_json_list_add(object, new_node);
 }
 
 bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
@@ -197,17 +188,8 @@ bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) 
 
     strcpy(new_node->key, key);
     new_node->next = NULL;
-
-    serdec_json_list_t* list = object->value.children;
-    if (!list->head) {
-        list->head = list->tail = new_node;
-    } else {
-        list->tail->next = new_node;
-        list->tail = new_node;
-    }
-
-    list->length++;
-    return true;
+    
+    return serdec_json_list_add(object, new_node);
 }
 
 bool serdec_json_add_float(serdec_json_t* object, const char* key, double value) {
@@ -230,7 +212,8 @@ bool serdec_json_array_add(serdec_json_array_t* array, serdec_json_t* value) {
 
 }
 
-bool serdec_json_list_add(serdec_json_list_t* list, serdec_json_t* new_node) {
+bool serdec_json_list_add(serdec_json_t* object, serdec_json_t* new_node) {
+    serdec_json_list_t* list = object->value.children;
     if (!list || !new_node)
         return false;
 
