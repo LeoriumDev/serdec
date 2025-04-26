@@ -61,7 +61,13 @@ serdec_json_t* serdec_json_new_null(void) {
 }
 
 serdec_json_t* serdec_json_new_bool(bool value) {
+    serdec_json_t* node = serdec_json_new_node();
+    if (!node)
+        return NULL;
 
+    node->json_type = SERDEC_JSON_BOOLEAN;
+    node->value.bool_val = value;
+    return node;
 }
 
 serdec_json_t* serdec_json_new_int(int64_t value) {
