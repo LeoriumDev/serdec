@@ -148,7 +148,33 @@ serdec_json_t* serdec_json_new_object(void) {
 }
 
 bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
+    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+        return false;
 
+    (void)null;
+    
+    serdec_json_t* new_node = serdec_json_new_null();
+    if (!new_node)
+        return false;
+
+    new_node->key = malloc(strlen(key) + 1);
+    if (!new_node->key) {
+        free(new_node);
+        return false;
+    }
+
+    strcpy(new_node->key, key);
+
+    serdec_json_list_t* list = object->value.children;
+    if (!list->head) {
+        list->head = list->tail = new_node;
+    } else {
+        list->tail->next = new_node;
+        list->tail = new_node;
+    }
+
+    list->length++;
+    return true;
 }
 
 bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
