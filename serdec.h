@@ -44,7 +44,13 @@ typedef struct serdec_json_list  serdec_json_list_t;
 typedef struct serdec_json_array serdec_json_array_t;
 typedef struct serdec_json       serdec_json_t;
 
-serdec_json_t* serdec_json_new_object(void);
+serdec_json_t* serdec_json_new_null   (void);
+serdec_json_t* serdec_json_new_bool   (bool value);
+serdec_json_t* serdec_json_new_int    (int64_t value);
+serdec_json_t* serdec_json_new_float  (double value);
+serdec_json_t* serdec_json_new_string (const char* string);
+serdec_json_t* serdec_json_new_array  (serdec_json_array_t* json_array);
+serdec_json_t* serdec_json_new_object (void);
 
 bool serdec_json_add_null   (serdec_json_t* object, const char* key, void* null);
 bool serdec_json_add_bool   (serdec_json_t* object, const char* key, bool value);
