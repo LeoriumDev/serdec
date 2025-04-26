@@ -63,6 +63,7 @@ serdec_json_t* serdec_json_new_null(void) {
 serdec_json_t* serdec_json_new_bool(bool value) {
 
 }
+
 serdec_json_t* serdec_json_new_int(int64_t value) {
     serdec_json_t* node = serdec_json_new_node();
     if (!node)
@@ -86,19 +87,22 @@ serdec_json_t* serdec_json_new_array(void) {
 }
 
 serdec_json_t* serdec_json_new_object(void) {
-    serdec_json_t* node = malloc(sizeof(serdec_json_t));
+    serdec_json_t* node = serdec_json_new_node();
     if (!node)
         return NULL;
 
-    node->key = NULL;
     node->json_type = SERDEC_JSON_OBJECT;
-    
+
     node->value.children = malloc(sizeof(serdec_json_list_t));
+    if (!node->value.children) {
+        free(node);
+        return NULL;
+    }
+    
     node->value.children->head = NULL;
     node->value.children->tail = NULL;
     node->value.children->length = 0;
 
-    node->next = NULL;
     return node;
 }
 
