@@ -24,7 +24,7 @@ const config = {
           sidebarPath: './sidebars.js',
           editUrl:
             'https://github.com/LeoriumDev/serdec/tree/main/docs',
-          routeBasePath: '/'
+          routeBasePath: '/',
         },
         blog: {
           showReadingTime: true,
@@ -69,6 +69,11 @@ const config = {
           //   position: 'right',
           // },
         ],
+      },
+      docs: {
+        sidebar: {
+          hideable: true,
+        },
       },
       footer: {
         style: 'dark',
