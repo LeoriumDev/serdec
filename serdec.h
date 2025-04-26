@@ -38,6 +38,8 @@ extern "C" {
 #define sjson_add_string  serdec_json_add_string
 #define sjson_add_array   serdec_json_add_array
 #define sjson_add_object  serdec_json_add_object
+#define sjson_array_add   serdec_json_array_add
+#define sjson_list_add    serdec_json_list_add
 
 /* JSON field types */
 typedef enum {
