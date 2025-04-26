@@ -18,7 +18,6 @@
 
 #define INDENT "\x20\x20\x20\x20"
 
-
 serdec_json_t* serdec_json_new_object(void) {
     serdec_json_t* node = malloc(sizeof(serdec_json_t));
     if (!node)
@@ -37,6 +36,8 @@ serdec_json_t* serdec_json_new_object(void) {
 }
 
 serdec_json_t* serdec_json_new_int(int64_t value) {
+    if (!value)
+        return NULL;
     serdec_json_t* node = malloc(sizeof(serdec_json_t));
     if (!node)
         return NULL;
@@ -78,15 +79,23 @@ bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) 
 }
 
 char* serdec_json_stringify(serdec_json_t* object) {
-    char* string = malloc(100);
-    strcat(string, "{\n");
     serdec_json_t* ptr = object->value.children->head;
-    while(ptr != NULL) {
-        char tmp[100];
-        snprintf(tmp, 100, INDENT "\"%s\": %" PRId64 "%s\n", ptr->key, ptr->value.int_val, (!ptr->next) ? "" : ",");
-        strcat(string, tmp);
-        ptr = ptr->next;
+    if (!ptr)
+        return NULL;
+
+    if (ptr->json_type == SERDEC_JSON_INT) {
+        char* string = malloc(100);
+        strcpy(string, "{\n");
+    
+        while(ptr != NULL) {
+            char tmp[100];
+            snprintf(tmp, 100, INDENT "\"%s\": %" PRId64 "%s\n", ptr->key, ptr->value.int_val, (!ptr->next) ? "" : ",");
+            strcat(string, tmp);
+            ptr = ptr->next;
+        }
+        strcat(string, "}");
+        return string;
     }
-    strcat(string,  "}");
-    return string;
+
+    return NULL;
 }
