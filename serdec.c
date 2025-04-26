@@ -152,7 +152,7 @@ bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
         return false;
 
     (void)null;
-    
+
     serdec_json_t* new_node = serdec_json_new_null();
     if (!new_node)
         return false;
@@ -228,6 +228,21 @@ bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_
 
 bool serdec_json_array_add(serdec_json_array_t* array, serdec_json_t* value) {
 
+}
+
+bool serdec_json_list_add(serdec_json_list_t* list, serdec_json_t* new_node) {
+    if (!list || !new_node)
+        return false;
+
+    if (!list->head) {
+        list->head = list->tail = new_node;
+    } else {
+        list->tail->next = new_node;
+        list->tail = new_node;
+    }
+
+    list->length++;
+    return true;
 }
 
 char* serdec_json_stringify(serdec_json_t* object) {

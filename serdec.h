@@ -74,6 +74,7 @@ bool serdec_json_add_string (serdec_json_t* object, const char* key, const char*
 bool serdec_json_add_array  (serdec_json_t* object, const char* key, serdec_json_array_t* value);
 bool serdec_json_add_object (serdec_json_t* object, const char* key, serdec_json_t* value);
 bool serdec_json_array_add  (serdec_json_array_t* array, serdec_json_t* value);
+bool serdec_json_list_add   (serdec_json_list_t* list, serdec_json_t* value);
 
 #if __STDC_VERSION__ >= 201112L
 #define serdec_json_add(object, key, value)                \
