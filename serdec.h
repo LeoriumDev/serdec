@@ -22,6 +22,7 @@
 extern "C" {
 #endif
 
+/* Serdec JSON function alias */
 #define sjson_new_null    serdec_json_new_null
 #define sjson_new_bool    serdec_json_new_bool
 #define sjson_new_int     serdec_json_new_int
@@ -38,6 +39,7 @@ extern "C" {
 #define sjson_add_array   serdec_json_add_array
 #define sjson_add_object  serdec_json_add_object
 
+/* JSON field types */
 typedef enum {
     SERDEC_JSON_NULL    ,
     SERDEC_JSON_BOOLEAN ,
@@ -48,6 +50,7 @@ typedef enum {
     SERDEC_JSON_OBJECT
 } serdec_json_type;
 
+/* JSON object structures */
 typedef struct serdec_json_list  serdec_json_list_t;
 typedef struct serdec_json_array serdec_json_array_t;
 typedef struct serdec_json       serdec_json_t;
@@ -89,6 +92,7 @@ bool serdec_json_array_add  (serdec_json_array_t* array, serdec_json_t* value);
     )(object, key, value)
 #endif
 
+/* Utility */
 char*          serdec_json_stringify (serdec_json_t* node);
 serdec_json_t* serdec_json_parse     (const char* json_string);
 void           serdec_json_free      (serdec_json_t* node);
