@@ -18,12 +18,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#define sjson_new_object serdec_json_new_object
-#define sjson_stringify serdec_json_stringify
-#define sjson_free serdec_json_free
-#define sjson_t serdec_json_t
-#define sjson_array_t serdec_json_array_t
-
 typedef enum {
     SERDEC_JSON_NULL,
     SERDEC_JSON_BOOLEAN,
@@ -44,10 +38,10 @@ typedef struct serdec_json {
     char* key;
     serdec_json_type json_type;
     union {
-        bool boolean_val;
+        bool bool_val;
         int64_t int_val;
         double float_val;
-        char* string_val;
+        char* str_val;
         serdec_json_list_t* children;
     } value;
     struct serdec_json* next;
