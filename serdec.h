@@ -41,6 +41,20 @@ extern "C" {
 #define sjson_array_add   serdec_json_array_add
 #define sjson_list_add    serdec_json_list_add
 
+
+/* Initial size (in bytes) for the JSON serialization buffer (default: 256). */
+#define SERDEC_INITIAL_BUFFER_SIZE 256
+
+/* Growth multiplier for the buffer when it runs out of space (default: 2x). */
+#define SERDEC_BUFFER_GROWTH_FACTOR 2
+
+/* Default indentation (4 spaces) used when serializing JSON with formatting. */
+#define SERDEC_INDENT "\x20\x20\x20\x20"
+
+/* Avoid C compiler automatically cast bool to int */
+#define serdec_json_bool(value) ((bool) value)
+#define sjson_bool(value) ((bool) value)
+
 /* JSON field types */
 typedef enum {
     SERDEC_JSON_NULL    ,
@@ -78,6 +92,7 @@ bool serdec_json_add_object (serdec_json_t* object, const char* key, serdec_json
 bool serdec_json_array_add  (serdec_json_array_t* array, serdec_json_t* value);
 bool serdec_json_list_add   (serdec_json_t* object, serdec_json_t* value);
 
+/* Automatically dispatch to the correct serdec_json_add_* function based on value type (C11 _Generic). */
 #if __STDC_VERSION__ >= 201112L
 #define serdec_json_add(object, key, value)                \
     _Generic((value),                                      \

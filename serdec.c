@@ -16,8 +16,6 @@
 #include <string.h>
 #include <inttypes.h>
 
-#define INDENT "\x20\x20\x20\x20"
-
 struct serdec_json_list {
     struct serdec_json* head;
     struct serdec_json* tail;
@@ -322,21 +320,51 @@ char* serdec_json_stringify(serdec_json_t* object) {
     if (!ptr)
         return NULL;
 
-    if (ptr->json_type == SERDEC_JSON_INT) {
-        char* string = malloc(100);
-        strcpy(string, "{\n");
+    char* string = malloc(SERDEC_INITIAL_BUFFER_SIZE);
+    char* tmp = malloc(SERDEC_INITIAL_BUFFER_SIZE);
+    if (!string || !tmp)
+        return NULL;
     
-        while (ptr != NULL) {
-            char tmp[100];
-            snprintf(tmp, 100, INDENT "\"%s\": %" PRId64 "%s\n", ptr->key, ptr->value.int_val, (!ptr->next) ? "" : ",");
-            strcat(string, tmp);
-            ptr = ptr->next;
-        }
-        strcat(string, "}");
-        return string;
-    }
+    strcpy(string, "{\n");
 
-    return NULL;
+    while (ptr) {
+        strcat(string, SERDEC_INDENT);
+        strcat(string, "\"");
+        strcat(string, ptr->key);
+        strcat(string, "\": ");
+
+        switch (ptr->json_type) {
+        case SERDEC_JSON_NULL:
+            strcat(string, "null");
+            break;
+        case SERDEC_JSON_BOOLEAN:
+            strcat(string, (ptr->value.bool_val) ? "true": "false");
+            break;
+        case SERDEC_JSON_INT:
+            snprintf(tmp, sizeof(tmp), "%" PRId64, ptr->value.int_val);
+            strcat(string, tmp);
+            break;
+        case SERDEC_JSON_FLOAT:
+            snprintf(tmp, sizeof(tmp), "%f", ptr->value.float_val);
+            strcat(string, tmp);
+            break;
+        case SERDEC_JSON_STRING:
+            strcat(string, "\"");
+            strcat(string, ptr->value.str_val);
+            strcat(string, "\"");
+            break;
+        case SERDEC_JSON_ARRAY:
+            break;
+        case SERDEC_JSON_OBJECT:
+            break;
+        }
+
+        if (ptr->next)
+            strcat(string, ",\n");
+        ptr = ptr->next;
+    }
+    strcat(string, "\n}");
+    return string;
 }
 
 serdec_json_t* serdec_json_parse(const char* json_string) {
