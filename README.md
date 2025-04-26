@@ -21,7 +21,7 @@ Clone the repository:
 git clone https://github.com/LeoriumDev/serdec.git
 ```
 
-Add the `src/` files to your project:
+Add the following files to your project:
 
 ```plaintext
 serdec.c
