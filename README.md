@@ -1,12 +1,5 @@
 # Serdec
-A C serialization and deserialization library.
-# Serdec
-
-A lightweight C serialization and deserialization library for working with JSON (and future formats like YAML, XML).
-
-**Author:** Leorium  
-**License:** MIT
-
+A lightweight C serialization and deserialization library for working with JSON (and future formats like YAML, TOML, XML, CSV).
 ---
 
 ## ✨ Features
@@ -25,21 +18,20 @@ A lightweight C serialization and deserialization library for working with JSON 
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/serdec.git
+git clone https://github.com/LeoriumDev/serdec.git
 ```
 
 Add the `src/` files to your project:
 
 ```plaintext
-src/
-  serdec_json.c
-  serdec_json.h
+serdec.c
+serdec.h
 ```
 
 Compile together with your code:
 
 ```bash
-gcc your_code.c src/serdec_json.c -o your_program
+gcc your_code.c serdec.c -o your_program
 ```
 
 ---
@@ -47,7 +39,8 @@ gcc your_code.c src/serdec_json.c -o your_program
 ## 📝 Example Usage
 
 ```c
-#include "serdec_json.h"
+#include <stdio.h>
+#include "serdec.h"
 
 int main(void) {
     serdec_json_t* root = serdec_json_new_object();
@@ -66,7 +59,7 @@ int main(void) {
     serdec_json_free(root);
     free(output);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 ```
 
