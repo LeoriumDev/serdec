@@ -18,6 +18,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     SERDEC_JSON_NULL,
     SERDEC_JSON_BOOLEAN,
@@ -34,7 +38,6 @@ typedef struct serdec_json_list {
     size_t length;
 } serdec_json_list_t;
 
-
 typedef struct serdec_json_array {
     serdec_json_list_t* array;
 } serdec_json_array_t;
@@ -43,6 +46,7 @@ typedef struct serdec_json {
     char* key;
     serdec_json_type json_type;
     union {
+        void* null;
         bool bool_val;
         int64_t int_val;
         double float_val;
@@ -79,5 +83,6 @@ bool serdec_json_add_object (serdec_json_t* object, const char* key, serdec_json
         default:              serdec_json_add_null         \
     )(object, key, value)
 
-void serdec_json_free(serdec_json_t* root);
-bool serdec_json_list_append(serdec_json_list_t* list, serdec_json_t* value);
+#ifdef __cplusplus
+}
+#endif
