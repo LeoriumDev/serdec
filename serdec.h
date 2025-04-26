@@ -21,6 +21,8 @@
 #define sjson_new_object serdec_json_new_object
 #define sjson_stringify serdec_json_stringify
 #define sjson_free serdec_json_free
+#define sjson_t serdec_json_t
+#define sjson_array_t serdec_json_array_t
 
 typedef enum {
     SERDEC_JSON_NULL,
@@ -51,27 +53,35 @@ typedef struct serdec_json {
     struct serdec_json* next;
 } serdec_json_t;
 
+typedef struct serdec_json_array {
+    serdec_json_t* array;
+} serdec_json_array_t;
+
 serdec_json_t* serdec_json_new_object(void);
 char* serdec_json_stringify(serdec_json_t* node);
 
-bool serdec_json_add_null(serdec_json_t* object, const char* key);
-bool serdec_json_add_bool(serdec_json_t* object, const char* key, int64_t value);
-bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value);
-bool serdec_json_add_float(serdec_json_t* object, const char* key, double value);
-bool serdec_json_add_string(serdec_json_t* object, const char* key, int64_t value);
-bool serdec_json_add_array(serdec_json_t* object, const char* key, int64_t value);
-bool serdec_json_add_object(serdec_json_t* object, const char* key, int64_t value);
+bool serdec_json_add_null   (serdec_json_t* object, const char* key, void* null);
+bool serdec_json_add_bool   (serdec_json_t* object, const char* key, int64_t value);
+bool serdec_json_add_int    (serdec_json_t* object, const char* key, int64_t value);
+bool serdec_json_add_float  (serdec_json_t* object, const char* key, double value);
+bool serdec_json_add_string (serdec_json_t* object, const char* key, const char* value);
+bool serdec_json_add_array  (serdec_json_t* object, const char* key, serdec_json_array_t* value);
+bool serdec_json_add_object (serdec_json_t* object, const char* key, serdec_json_t* value);
 
-#define serdec_json_add(object, key, value)             \
-    _Generic((value),                                   \
-        int:         serdec_json_object_add_int,         \
-        int64_t:     serdec_json_object_add_int,         \
-        float:       serdec_json_object_add_float,       \
-        double:      serdec_json_object_add_float_wrap,       \
-        const char*: serdec_json_object_add_str_or_null_wrap, \
-        char*:       serdec_json_object_add_str_or_null_wrap, \
-        bool:        serdec_json_object_add_bool_wrap,        \
-        default:     serdec_json_object_add          \
-    )(obj, key, value)
+#define serdec_json_add(object, key, value)                \
+    _Generic((value),                                      \
+        void*:                serdec_json_add_null,        \
+        int:                  serdec_json_add_int,         \
+        int64_t:              serdec_json_add_int,         \
+        float:                serdec_json_add_float,       \
+        double:               serdec_json_add_float,       \
+        const char*:          serdec_json_add_string,      \
+        char*:                serdec_json_add_string,      \
+        bool:                 serdec_json_add_bool,        \
+        serdec_json_array_t*: serdec_json_add_array,       \
+        serdec_json_t*:       serdec_json_add_object,      \
+        default:              serdec_json_add_null         \
+    )(object, key, value)
+
 void serdec_json_free(serdec_json_t* root);
 bool serdec_json_list_append(serdec_json_list_t* list, serdec_json_t* value);
