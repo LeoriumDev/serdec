@@ -112,7 +112,7 @@ char* serdec_json_stringify(serdec_json_t* object) {
         char* string = malloc(100);
         strcpy(string, "{\n");
     
-        while(ptr != NULL) {
+        while (ptr != NULL) {
             char tmp[100];
             snprintf(tmp, 100, INDENT "\"%s\": %" PRId64 "%s\n", ptr->key, ptr->value.int_val, (!ptr->next) ? "" : ",");
             strcat(string, tmp);
