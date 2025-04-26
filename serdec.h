@@ -22,6 +22,14 @@
 extern "C" {
 #endif
 
+#define sjson_new_null    serdec_json_new_null
+#define sjson_new_bool    serdec_json_new_bool
+#define sjson_new_int     serdec_json_new_int
+#define sjson_new_float   serdec_json_new_float
+#define sjson_new_string  serdec_json_new_string
+#define sjson_new_array   serdec_json_new_array
+#define sjson_new_object  serdec_json_new_object
+
 #define sjson_add_null    serdec_json_add_null
 #define sjson_add_bool    serdec_json_add_bool
 #define sjson_add_int     serdec_json_add_int
@@ -49,7 +57,7 @@ serdec_json_t* serdec_json_new_bool   (bool value);
 serdec_json_t* serdec_json_new_int    (int64_t value);
 serdec_json_t* serdec_json_new_float  (double value);
 serdec_json_t* serdec_json_new_string (const char* string);
-serdec_json_t* serdec_json_new_array  (serdec_json_array_t* json_array);
+serdec_json_t* serdec_json_new_array  (void);
 serdec_json_t* serdec_json_new_object (void);
 
 bool serdec_json_add_null   (serdec_json_t* object, const char* key, void* null);
