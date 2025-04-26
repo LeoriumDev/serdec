@@ -32,36 +32,15 @@ typedef enum {
     SERDEC_JSON_OBJECT
 } serdec_json_type;
 
-typedef struct serdec_json_list {
-    struct serdec_json* head;
-    struct serdec_json* tail;
-    size_t length;
-} serdec_json_list_t;
-
-typedef struct serdec_json_array {
-    serdec_json_list_t* array;
-} serdec_json_array_t;
-
-typedef struct serdec_json {
-    char* key;
-    serdec_json_type json_type;
-    union {
-        void* null;
-        bool bool_val;
-        int64_t int_val;
-        double float_val;
-        char* str_val;
-        serdec_json_array_t* array;
-        serdec_json_list_t* children;
-    } value;
-    struct serdec_json* next;
-} serdec_json_t;
+typedef struct serdec_json_list serdec_json_list_t;
+typedef struct serdec_json_array serdec_json_array_t;
+typedef struct serdec_json serdec_json_t;
 
 serdec_json_t* serdec_json_new_object(void);
 char* serdec_json_stringify(serdec_json_t* node);
 
 bool serdec_json_add_null   (serdec_json_t* object, const char* key, void* null);
-bool serdec_json_add_bool   (serdec_json_t* object, const char* key, int64_t value);
+bool serdec_json_add_bool   (serdec_json_t* object, const char* key, bool value);
 bool serdec_json_add_int    (serdec_json_t* object, const char* key, int64_t value);
 bool serdec_json_add_float  (serdec_json_t* object, const char* key, double value);
 bool serdec_json_add_string (serdec_json_t* object, const char* key, const char* value);

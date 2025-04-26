@@ -18,6 +18,31 @@
 
 #define INDENT "\x20\x20\x20\x20"
 
+struct serdec_json_list {
+    struct serdec_json* head;
+    struct serdec_json* tail;
+    size_t length;
+};
+
+struct serdec_json_array {
+    serdec_json_list_t* array;
+};
+
+struct serdec_json {
+    char* key;
+    serdec_json_type json_type;
+    union {
+        void* null;
+        bool bool_val;
+        int64_t int_val;
+        double float_val;
+        char* str_val;
+        serdec_json_array_t* array;
+        serdec_json_list_t* children;
+    } value;
+    struct serdec_json* next;
+};
+
 serdec_json_t* serdec_json_new_object(void) {
     serdec_json_t* node = malloc(sizeof(serdec_json_t));
     if (!node)
