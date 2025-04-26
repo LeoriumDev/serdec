@@ -54,7 +54,7 @@ typedef struct serdec_json {
 } serdec_json_t;
 
 typedef struct serdec_json_array {
-    serdec_json_t* array;
+    serdec_json_list_t* array;
 } serdec_json_array_t;
 
 serdec_json_t* serdec_json_new_object(void);
