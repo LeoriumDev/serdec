@@ -11,7 +11,6 @@
 
 #include "serdec_json.h"
 
-
 struct serdec_json_list {
     struct serdec_json* head;
     struct serdec_json* tail;
@@ -137,7 +136,8 @@ serdec_json_t* serdec_json_new_object(void) {
 }
 
 bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
-    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+    if (!object || !key || object->json_type != SERDEC_JSON_OBJECT ||
+        !object->value.children)
         return false;
 
     (void) null;
@@ -158,7 +158,8 @@ bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
 }
 
 bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
-    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+    if (!object || !key || object->json_type != SERDEC_JSON_OBJECT||
+        !object->value.children)
         return false;
 
     serdec_json_t* new_node = serdec_json_new_bool(value);
@@ -177,7 +178,8 @@ bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
 }
 
 bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) {
-    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+    if (!object || !key || object->json_type != SERDEC_JSON_OBJECT ||
+        !object->value.children)
         return false;
 
     serdec_json_t* new_node = serdec_json_new_int(value);
@@ -197,7 +199,8 @@ bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) 
 }
 
 bool serdec_json_add_float(serdec_json_t* object, const char* key, double value) {
-    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+    if (!object || !key || object->json_type != SERDEC_JSON_OBJECT ||
+        !object->value.children)
         return false;
 
     serdec_json_t* new_node = serdec_json_new_float(value);
@@ -216,7 +219,8 @@ bool serdec_json_add_float(serdec_json_t* object, const char* key, double value)
 }
 
 bool serdec_json_add_string(serdec_json_t* object, const char* key, const char* value) {
-    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+    if (!object || !key || object->json_type != SERDEC_JSON_OBJECT ||
+        !object->value.children)
         return false;
 
     serdec_json_t* new_node = serdec_json_new_string(value);
@@ -235,7 +239,8 @@ bool serdec_json_add_string(serdec_json_t* object, const char* key, const char* 
 }
 
 bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_t* value) {
-    if (!object || value->json_type != SERDEC_JSON_OBJECT)
+    if (!object || !key || object->json_type != SERDEC_JSON_OBJECT ||
+        !object->value.children)
         return false;
 
     serdec_json_t* new_node = serdec_json_new_object();
