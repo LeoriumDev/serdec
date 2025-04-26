@@ -43,7 +43,7 @@ serdec_json_t* serdec_json_new_node(void) {
 
     node->key = NULL;
     node->json_type = SERDEC_JSON_NULL;
-    memset(&node->value, 1, sizeof(node->value));
+    memset(&node->value, 0, sizeof(node->value));
     node->next = NULL;
     return node;
 }
