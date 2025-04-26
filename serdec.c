@@ -151,7 +151,7 @@ bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
     if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
         return false;
 
-    (void)null;
+    (void) null;
 
     serdec_json_t* new_node = serdec_json_new_null();
     if (!new_node)
@@ -169,7 +169,22 @@ bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
 }
 
 bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
+    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+        return false;
 
+    serdec_json_t* new_node = serdec_json_new_bool(value);
+    if (!new_node)
+        return false;
+
+    new_node->key = malloc(strlen(key) + 1);
+    if (!new_node->key) {
+        free(new_node);
+        return false;
+    }
+
+    strcpy(new_node->key, key);
+
+    return serdec_json_list_add(object, new_node);  
 }
 
 bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) {
