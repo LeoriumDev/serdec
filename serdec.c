@@ -43,6 +43,37 @@ struct serdec_json {
     struct serdec_json* next;
 };
 
+serdec_json_t* serdec_json_new_null(void) {
+
+}
+
+serdec_json_t* serdec_json_new_bool(bool value) {
+
+}
+serdec_json_t* serdec_json_new_int(int64_t value) {
+    serdec_json_t* node = malloc(sizeof(serdec_json_t));
+    if (!node)
+        return NULL;
+
+    node->key = NULL;
+    node->json_type = SERDEC_JSON_INT;
+    node->value.int_val = value;
+    node->next = NULL;
+    return node;
+}
+
+serdec_json_t* serdec_json_new_float(double value) {
+
+}
+
+serdec_json_t* serdec_json_new_string(const char* string) {
+
+}
+
+serdec_json_t* serdec_json_new_array(void) {
+
+}
+
 serdec_json_t* serdec_json_new_object(void) {
     serdec_json_t* node = malloc(sizeof(serdec_json_t));
     if (!node)
@@ -60,16 +91,12 @@ serdec_json_t* serdec_json_new_object(void) {
     return node;
 }
 
-serdec_json_t* serdec_json_new_int(int64_t value) {
-    serdec_json_t* node = malloc(sizeof(serdec_json_t));
-    if (!node)
-        return NULL;
+bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
 
-    node->key = NULL;
-    node->json_type = SERDEC_JSON_INT;
-    node->value.int_val = value;
-    node->next = NULL;
-    return node;
+}
+
+bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
+
 }
 
 bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) {
@@ -101,6 +128,26 @@ bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) 
     return true;
 }
 
+bool serdec_json_add_float(serdec_json_t* object, const char* key, double value) {
+
+}
+
+bool serdec_json_add_string(serdec_json_t* object, const char* key, const char* value) {
+
+}
+
+bool serdec_json_add_array(serdec_json_t* object, const char* key, serdec_json_array_t* value) {
+
+}
+
+bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_t* value) {
+
+}
+
+bool serdec_json_array_add(serdec_json_array_t* array, serdec_json_t* value) {
+
+}
+
 char* serdec_json_stringify(serdec_json_t* object) {
     serdec_json_t* ptr = object->value.children->head;
     if (!ptr)
@@ -121,4 +168,12 @@ char* serdec_json_stringify(serdec_json_t* object) {
     }
 
     return NULL;
+}
+
+serdec_json_t* serdec_json_parse(const char* json_string) {
+
+}
+
+void serdec_json_free(serdec_json_t* node) {
+    
 }
