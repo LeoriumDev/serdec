@@ -98,20 +98,26 @@ typedef enum {
 
 # 🌟 Example Usage
 
-```c
-serdec_json_t* root = serdec_json_new_object();
-serdec_json_add_string(root, "name", "Leorium");
-serdec_json_add_int(root, "age", 24);
+```c title="example.c"
+#include <stdio.h>
+#include <serdec/serdec.h>
 
-serdec_json_t* hobbies = serdec_json_new_array();
-serdec_json_array_add(hobbies, serdec_json_new_string("C Programming"));
-serdec_json_array_add(hobbies, serdec_json_new_string("Motorcycling"));
+int main(void) {
+    serdec_json_t* root = serdec_json_new_object();
+    serdec_json_add_string(root, "name", "Leorium");
+    serdec_json_add_int(root, "age", 20);
 
-serdec_json_add_object(root, "hobbies", hobbies);
+    serdec_json_t* hobbies = serdec_json_new_array();
+    serdec_json_array_add(hobbies, serdec_json_new_string("C Programming"));
+    serdec_json_array_add(hobbies, serdec_json_new_string("Motorcycling"));
 
-char* output = serdec_json_stringify(root);
-printf("%s\n", output);
+    serdec_json_add_object(root, "hobbies", hobbies);
 
-serdec_json_free(root);
-free(output);
+    char* output = serdec_json_stringify(root);
+    printf("%s\n", output);
+
+    serdec_json_free(root);
+    free(output);
+    return EXIT_SUCCESS;
+}
 ```

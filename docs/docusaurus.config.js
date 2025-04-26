@@ -124,8 +124,7 @@ const config = {
         defaultMode: 'dark',
       },
       prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        theme: prismThemes.vsDark,
       },
     }),
 };
