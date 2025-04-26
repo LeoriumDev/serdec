@@ -90,7 +90,23 @@ serdec_json_t* serdec_json_new_float(double value) {
 }
 
 serdec_json_t* serdec_json_new_string(const char* string) {
+    if (!string)
+        return NULL;
+    
+    serdec_json_t* node = serdec_json_new_node();
+    if (!node)
+        return NULL;
 
+    node->json_type = SERDEC_JSON_STRING;
+
+    node->value.str_val = malloc(strlen(string) + 1);
+    if (!node->value.str_val) {
+        free(node);
+        return NULL;
+    }
+
+    strcpy(node->value.str_val, string);
+    return node;
 }
 
 serdec_json_t* serdec_json_new_array(void) {
