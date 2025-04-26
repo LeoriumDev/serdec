@@ -52,7 +52,6 @@ serdec_json_t* serdec_json_new_node(void) {
     node->json_type = SERDEC_JSON_NULL;
     memset(&node->value, 0, sizeof(node->value));
     node->next = NULL;
-
     return node;
 }
 
@@ -81,7 +80,13 @@ serdec_json_t* serdec_json_new_int(int64_t value) {
 }
 
 serdec_json_t* serdec_json_new_float(double value) {
+    serdec_json_t* node = serdec_json_new_node();
+    if (!node)
+        return NULL;
 
+    node->json_type = SERDEC_JSON_FLOAT;
+    node->value.float_val = value;
+    return node;
 }
 
 serdec_json_t* serdec_json_new_string(const char* string) {
@@ -108,7 +113,6 @@ serdec_json_t* serdec_json_new_object(void) {
     node->value.children->head = NULL;
     node->value.children->tail = NULL;
     node->value.children->length = 0;
-
     return node;
 }
 
