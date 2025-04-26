@@ -34,6 +34,11 @@ typedef struct serdec_json_list {
     size_t length;
 } serdec_json_list_t;
 
+
+typedef struct serdec_json_array {
+    serdec_json_list_t* array;
+} serdec_json_array_t;
+
 typedef struct serdec_json {
     char* key;
     serdec_json_type json_type;
@@ -42,14 +47,11 @@ typedef struct serdec_json {
         int64_t int_val;
         double float_val;
         char* str_val;
+        serdec_json_array_t* array;
         serdec_json_list_t* children;
     } value;
     struct serdec_json* next;
 } serdec_json_t;
-
-typedef struct serdec_json_array {
-    serdec_json_list_t* array;
-} serdec_json_array_t;
 
 serdec_json_t* serdec_json_new_object(void);
 char* serdec_json_stringify(serdec_json_t* node);
