@@ -25,7 +25,7 @@ struct serdec_json_list {
 };
 
 struct serdec_json_array {
-    serdec_json_list_t* array;
+    serdec_json_list_t* json_array;
 };
 
 struct serdec_json {
@@ -286,7 +286,19 @@ bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_
 }
 
 bool serdec_json_array_add(serdec_json_array_t* array, serdec_json_t* value) {
+    if (!array || !value)
+        return false;
+    
+    serdec_json_list_t* json_array = array->json_array;
+    if (!json_array->head) {
+        json_array->head = json_array->tail = value;
+    } else {
+        json_array->tail->next = value;
+        json_array->tail = value;
+    }
 
+    json_array->length++;
+    return true;
 }
 
 bool serdec_json_list_add(serdec_json_t* object, serdec_json_t* new_node) {
