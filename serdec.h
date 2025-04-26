@@ -53,6 +53,7 @@ typedef struct serdec_json_array serdec_json_array_t;
 typedef struct serdec_json       serdec_json_t;
 
 /* JSON object creation functions */
+serdec_json_t* serdec_json_new_node   (void);
 serdec_json_t* serdec_json_new_null   (void);
 serdec_json_t* serdec_json_new_bool   (bool value);
 serdec_json_t* serdec_json_new_int    (int64_t value);

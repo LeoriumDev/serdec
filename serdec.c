@@ -43,6 +43,10 @@ struct serdec_json {
     struct serdec_json* next;
 };
 
+serdec_json_t* serdec_json_new_node(void) {
+
+}
+
 serdec_json_t* serdec_json_new_null(void) {
 
 }
@@ -175,5 +179,5 @@ serdec_json_t* serdec_json_parse(const char* json_string) {
 }
 
 void serdec_json_free(serdec_json_t* node) {
-    
+
 }
