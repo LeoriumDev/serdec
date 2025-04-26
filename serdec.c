@@ -57,7 +57,7 @@ serdec_json_t* serdec_json_new_node(void) {
 }
 
 serdec_json_t* serdec_json_new_null(void) {
-
+    return serdec_json_new_node();
 }
 
 serdec_json_t* serdec_json_new_bool(bool value) {
@@ -98,7 +98,7 @@ serdec_json_t* serdec_json_new_object(void) {
         free(node);
         return NULL;
     }
-    
+
     node->value.children->head = NULL;
     node->value.children->tail = NULL;
     node->value.children->length = 0;
