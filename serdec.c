@@ -61,8 +61,6 @@ serdec_json_t* serdec_json_new_object(void) {
 }
 
 serdec_json_t* serdec_json_new_int(int64_t value) {
-    if (!value)
-        return NULL;
     serdec_json_t* node = malloc(sizeof(serdec_json_t));
     if (!node)
         return NULL;
