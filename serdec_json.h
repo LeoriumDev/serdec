@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <inttypes.h>
 
 #ifdef __cplusplus
 extern "C" {
