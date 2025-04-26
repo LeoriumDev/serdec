@@ -22,10 +22,6 @@ struct serdec_json_list {
     size_t length;
 };
 
-struct serdec_json_array {
-    serdec_json_list_t* json_array;
-};
-
 struct serdec_json {
     char* key;
     serdec_json_type json_type;
@@ -35,7 +31,6 @@ struct serdec_json {
         int64_t int_val;
         double float_val;
         char* str_val;
-        serdec_json_array_t* array;
         serdec_json_list_t* children;
     } value;
     struct serdec_json* next;
@@ -48,7 +43,7 @@ serdec_json_t* serdec_json_new_node(void) {
 
     node->key = NULL;
     node->json_type = SERDEC_JSON_NULL;
-    memset(&node->value, 0, sizeof(node->value));
+    memset(&node->value, 1, sizeof(node->value));
     node->next = NULL;
     return node;
 }
@@ -114,7 +109,7 @@ serdec_json_t* serdec_json_new_array(void) {
 
     node->json_type = SERDEC_JSON_ARRAY;
 
-    node->value.children = malloc(sizeof(serdec_json_array_t));
+    node->value.children = malloc(sizeof(serdec_json_list_t));
     if (!node->value.children) {
         free(node);
         return NULL;
@@ -163,7 +158,7 @@ bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
 
     strcpy(new_node->key, key);
 
-    return serdec_json_list_add(object, new_node);
+    return serdec_json_list_append(object, new_node);
 }
 
 bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
@@ -182,7 +177,7 @@ bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
 
     strcpy(new_node->key, key);
 
-    return serdec_json_list_add(object, new_node);  
+    return serdec_json_list_append(object, new_node);  
 }
 
 bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) {
@@ -202,7 +197,7 @@ bool serdec_json_add_int(serdec_json_t* object, const char* key, int64_t value) 
     strcpy(new_node->key, key);
     new_node->next = NULL;
     
-    return serdec_json_list_add(object, new_node);
+    return serdec_json_list_append(object, new_node);
 }
 
 bool serdec_json_add_float(serdec_json_t* object, const char* key, double value) {
@@ -221,7 +216,7 @@ bool serdec_json_add_float(serdec_json_t* object, const char* key, double value)
 
     strcpy(new_node->key, key);
 
-    return serdec_json_list_add(object, new_node); 
+    return serdec_json_list_append(object, new_node); 
 }
 
 bool serdec_json_add_string(serdec_json_t* object, const char* key, const char* value) {
@@ -240,31 +235,11 @@ bool serdec_json_add_string(serdec_json_t* object, const char* key, const char* 
 
     strcpy(new_node->key, key);
 
-    return serdec_json_list_add(object, new_node);
-}
-
-bool serdec_json_add_array(serdec_json_t* object, const char* key, serdec_json_array_t* value) {
-    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
-        return false;
-
-    serdec_json_t* new_node = serdec_json_new_array();
-    if (!new_node)
-        return false;
-
-    new_node->key = malloc(strlen(key) + 1);
-    if (!new_node->key) {
-        free(new_node);
-        return false;
-    }
-
-    strcpy(new_node->key, key);
-    new_node->value.array = value;
-
-    return serdec_json_list_add(object, new_node);
+    return serdec_json_list_append(object, new_node);
 }
 
 bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_t* value) {
-    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+    if (!object || value->json_type != SERDEC_JSON_OBJECT)
         return false;
 
     serdec_json_t* new_node = serdec_json_new_object();
@@ -280,30 +255,34 @@ bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_
     strcpy(new_node->key, key);
     new_node->value.children = value->value.children;
 
-    return serdec_json_list_add(object, new_node);    
+    return serdec_json_list_append(object, new_node);    
 }
 
-bool serdec_json_array_add(serdec_json_array_t* array, serdec_json_t* value) {
-    if (!array || !value)
+bool serdec_json_add_array(serdec_json_t* object, const char* key, serdec_json_t* value) {
+    if (!object ||  value->json_type != SERDEC_JSON_ARRAY)
         return false;
 
-    serdec_json_list_t* json_array = array->json_array;
-    if (!json_array->head) {
-        json_array->head = json_array->tail = value;
-    } else {
-        json_array->tail->next = value;
-        json_array->tail = value;
+    serdec_json_t* new_node = serdec_json_new_array();
+    if (!new_node)
+        return false;
+
+    new_node->key = malloc(strlen(key) + 1);
+    if (!new_node->key) {
+        free(new_node);
+        return false;
     }
 
-    json_array->length++;
-    return true;
+    strcpy(new_node->key, key);
+    new_node->value.children = value->value.children;
+
+    return serdec_json_list_append(object, new_node); 
 }
 
-bool serdec_json_list_add(serdec_json_t* object, serdec_json_t* new_node) {
-    serdec_json_list_t* list = object->value.children;
-    if (!list || !new_node)
+bool serdec_json_list_append(serdec_json_t* object, serdec_json_t* new_node) {
+    if (!object || !object->value.children || !new_node)
         return false;
 
+    serdec_json_list_t* list = object->value.children;
     if (!list->head) {
         list->head = list->tail = new_node;
     } else {
@@ -315,55 +294,162 @@ bool serdec_json_list_add(serdec_json_t* object, serdec_json_t* new_node) {
     return true;
 }
 
+bool serdec_json_array_append(serdec_json_t* object, serdec_json_t* element) {
+    if (!object || !object->value.children || !element)
+        return false;
+    return serdec_json_list_append(object, element);
+}
+
 char* serdec_json_stringify(serdec_json_t* object) {
-    serdec_json_t* ptr = object->value.children->head;
-    if (!ptr)
+    if (!object)
         return NULL;
 
     char* string = malloc(SERDEC_INITIAL_BUFFER_SIZE);
-    char* tmp = malloc(SERDEC_INITIAL_BUFFER_SIZE);
-    if (!string || !tmp)
+    if (!string)
         return NULL;
-    
-    strcpy(string, "{\n");
+    string[0] = '\0';
 
-    while (ptr) {
-        strcat(string, SERDEC_INDENT);
-        strcat(string, "\"");
-        strcat(string, ptr->key);
-        strcat(string, "\": ");
+    char tmp[4096];
+    bool need_comma = false;
 
-        switch (ptr->json_type) {
-        case SERDEC_JSON_NULL:
-            strcat(string, "null");
-            break;
-        case SERDEC_JSON_BOOLEAN:
-            strcat(string, (ptr->value.bool_val) ? "true": "false");
-            break;
-        case SERDEC_JSON_INT:
-            snprintf(tmp, sizeof(tmp), "%" PRId64, ptr->value.int_val);
-            strcat(string, tmp);
-            break;
-        case SERDEC_JSON_FLOAT:
-            snprintf(tmp, sizeof(tmp), "%f", ptr->value.float_val);
-            strcat(string, tmp);
-            break;
-        case SERDEC_JSON_STRING:
+    if (object->json_type == SERDEC_JSON_OBJECT) {
+        strcat(string, "{\n");
+
+        serdec_json_t* ptr = object->value.children->head;
+        while (ptr) {
+            if (need_comma)
+                strcat(string, ",\n");
+
+            strcat(string, SERDEC_INDENT);
             strcat(string, "\"");
-            strcat(string, ptr->value.str_val);
-            strcat(string, "\"");
-            break;
-        case SERDEC_JSON_ARRAY:
-            break;
-        case SERDEC_JSON_OBJECT:
-            break;
+            strcat(string, ptr->key);
+            strcat(string, "\": ");
+
+            if (ptr->json_type == SERDEC_JSON_OBJECT) {
+                strcat(string, "{\n");
+
+                serdec_json_t* child = ptr->value.children->head;
+                bool first_child = true;
+                while (child) {
+                    if (!first_child)
+                        strcat(string, ",\n");
+                    strcat(string, SERDEC_INDENT);
+                    strcat(string, SERDEC_INDENT);
+                    strcat(string, "\"");
+                    strcat(string, child->key);
+                    strcat(string, "\": ");
+
+                    char* nested = serdec_json_stringify(child);
+                    strcat(string, nested);
+                    free(nested);
+
+                    first_child = false;
+                    child = child->next;
+                }
+                strcat(string, "\n");
+                strcat(string, SERDEC_INDENT);
+                strcat(string, "}");
+            } else if (ptr->json_type == SERDEC_JSON_ARRAY) {
+                strcat(string, "[\n");
+
+                serdec_json_t* element = ptr->value.children->head;
+                bool first_element = true;
+                while (element) {
+                    if (!first_element)
+                        strcat(string, ",\n");
+                    strcat(string, SERDEC_INDENT);
+                    strcat(string, SERDEC_INDENT);
+
+                    char* nested = serdec_json_stringify(element);
+                    strcat(string, nested);
+                    free(nested);
+
+                    first_element = false;
+                    element = element->next;
+                }
+                strcat(string, "\n");
+                strcat(string, SERDEC_INDENT);
+                strcat(string, "]");
+            } else {
+                switch (ptr->json_type) {
+                    case SERDEC_JSON_NULL:
+                        strcat(string, "null");
+                        break;
+                    case SERDEC_JSON_BOOLEAN:
+                        strcat(string, (ptr->value.bool_val) ? "true" : "false");
+                        break;
+                    case SERDEC_JSON_INT:
+                        snprintf(tmp, sizeof(tmp), "%" PRId64, ptr->value.int_val);
+                        strcat(string, tmp);
+                        break;
+                    case SERDEC_JSON_FLOAT:
+                        snprintf(tmp, sizeof(tmp), "%f", ptr->value.float_val);
+                        strcat(string, tmp);
+                        break;
+                    case SERDEC_JSON_STRING:
+                        strcat(string, "\"");
+                        strcat(string, ptr->value.str_val);
+                        strcat(string, "\"");
+                        break;
+                    default:
+                        strcat(string, "null");
+                        break;
+                }
+            }
+
+            need_comma = true;
+            ptr = ptr->next;
         }
 
-        if (ptr->next)
-            strcat(string, ",\n");
-        ptr = ptr->next;
+        strcat(string, "\n}");
+    } else if (object->json_type == SERDEC_JSON_ARRAY) {
+        strcat(string, "[\n");
+
+        serdec_json_t* ptr = object->value.children->head;
+        bool first = true;
+        while (ptr) {
+            if (!first)
+                strcat(string, ",\n");
+
+            strcat(string, SERDEC_INDENT);
+
+            char* nested = serdec_json_stringify(ptr);
+            strcat(string, nested);
+            free(nested);
+
+            first = false;
+            ptr = ptr->next;
+        }
+
+        strcat(string, "\n]");
+    } else {
+        // Primitive node
+        switch (object->json_type) {
+            case SERDEC_JSON_NULL:
+                strcat(string, "null");
+                break;
+            case SERDEC_JSON_BOOLEAN:
+                strcat(string, (object->value.bool_val) ? "true" : "false");
+                break;
+            case SERDEC_JSON_INT:
+                snprintf(tmp, sizeof(tmp), "%" PRId64, object->value.int_val);
+                strcat(string, tmp);
+                break;
+            case SERDEC_JSON_FLOAT:
+                snprintf(tmp, sizeof(tmp), "%f", object->value.float_val);
+                strcat(string, tmp);
+                break;
+            case SERDEC_JSON_STRING:
+                strcat(string, "\"");
+                strcat(string, object->value.str_val);
+                strcat(string, "\"");
+                break;
+            default:
+                strcat(string, "null");
+                break;
+        }
     }
-    strcat(string, "\n}");
+
     return string;
 }
 
@@ -381,9 +467,7 @@ void serdec_json_free(serdec_json_t* node) {
     switch (node->json_type) {
         case SERDEC_JSON_OBJECT:
         case SERDEC_JSON_ARRAY: {
-            serdec_json_list_t* list = (node->json_type == SERDEC_JSON_OBJECT) 
-                                       ? node->value.children 
-                                       : node->value.array->json_array;
+            serdec_json_list_t* list = node->value.children;
             if (list) {
                 serdec_json_t* current = list->head;
                 while (current) {
