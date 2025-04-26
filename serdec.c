@@ -246,7 +246,23 @@ bool serdec_json_add_string(serdec_json_t* object, const char* key, const char* 
 }
 
 bool serdec_json_add_array(serdec_json_t* object, const char* key, serdec_json_array_t* value) {
+    if (!object || object->json_type != SERDEC_JSON_OBJECT || !object->value.children)
+        return false;
 
+    serdec_json_t* new_node = serdec_json_new_array();
+    if (!new_node)
+        return false;
+
+    new_node->key = malloc(strlen(key) + 1);
+    if (!new_node->key) {
+        free(new_node);
+        return false;
+    }
+
+    strcpy(new_node->key, key);
+    new_node->value.array = value;
+
+    return serdec_json_list_add(object, new_node);
 }
 
 bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_t* value) {
