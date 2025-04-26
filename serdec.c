@@ -92,7 +92,7 @@ serdec_json_t* serdec_json_new_float(double value) {
 serdec_json_t* serdec_json_new_string(const char* string) {
     if (!string)
         return NULL;
-    
+
     serdec_json_t* node = serdec_json_new_node();
     if (!node)
         return NULL;
@@ -110,7 +110,22 @@ serdec_json_t* serdec_json_new_string(const char* string) {
 }
 
 serdec_json_t* serdec_json_new_array(void) {
+    serdec_json_t* node = serdec_json_new_node();
+    if (!node)
+        return NULL;
 
+    node->json_type = SERDEC_JSON_ARRAY;
+
+    node->value.children = malloc(sizeof(serdec_json_array_t));
+    if (!node->value.children) {
+        free(node);
+        return NULL;
+    }
+
+    node->value.children->head = NULL;
+    node->value.children->tail = NULL;
+    node->value.children->length = 0;
+    return node;
 }
 
 serdec_json_t* serdec_json_new_object(void) {
