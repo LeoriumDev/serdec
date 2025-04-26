@@ -288,7 +288,7 @@ bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_
 bool serdec_json_array_add(serdec_json_array_t* array, serdec_json_t* value) {
     if (!array || !value)
         return false;
-    
+
     serdec_json_list_t* json_array = array->json_array;
     if (!json_array->head) {
         json_array->head = json_array->tail = value;
@@ -344,5 +344,36 @@ serdec_json_t* serdec_json_parse(const char* json_string) {
 }
 
 void serdec_json_free(serdec_json_t* node) {
+    if (!node)
+        return;
 
+    if (node->key)
+        free(node->key);
+
+    switch (node->json_type) {
+        case SERDEC_JSON_OBJECT:
+        case SERDEC_JSON_ARRAY: {
+            serdec_json_list_t* list = (node->json_type == SERDEC_JSON_OBJECT) 
+                                       ? node->value.children 
+                                       : node->value.array->json_array;
+            if (list) {
+                serdec_json_t* current = list->head;
+                while (current) {
+                    serdec_json_t* next = current->next;
+                    serdec_json_free(current);
+                    current = next;
+                }
+                free(list);
+            }
+            break;
+        }
+        case SERDEC_JSON_STRING:
+            if (node->value.str_val)
+                free(node->value.str_val);
+            break;
+        default:
+            break;
+    }
+
+    free(node);
 }
