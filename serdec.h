@@ -68,6 +68,8 @@ bool serdec_json_add_string (serdec_json_t* object, const char* key, const char*
 bool serdec_json_add_array  (serdec_json_t* object, const char* key, serdec_json_array_t* value);
 bool serdec_json_add_object (serdec_json_t* object, const char* key, serdec_json_t* value);
 
+bool serdec_json_array_add  (serdec_json_array_t* array, serdec_json_t* value);
+
 #if __STDC_VERSION__ >= 201112L
 #define serdec_json_add(object, key, value)                \
     _Generic((value),                                      \
@@ -86,6 +88,8 @@ bool serdec_json_add_object (serdec_json_t* object, const char* key, serdec_json
 #endif
 
 char* serdec_json_stringify(serdec_json_t* node);
+serdec_json_t* serdec_json_parse(const char* json_string);
+void serdec_json_free(serdec_json_t* node);
 
 #ifdef __cplusplus
 }
