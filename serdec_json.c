@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "serdec.h"
+#include "serdec_json.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -356,7 +356,7 @@ char* serdec_json_stringify(serdec_json_t* object) {
                 bool first_element = true;
                 while (element) {
                     if (!first_element)
-                        strcat(string, ",\n");
+                        strcat(string, ",");
                     strcat(string, SERDEC_INDENT);
                     strcat(string, SERDEC_INDENT);
 
@@ -401,15 +401,15 @@ char* serdec_json_stringify(serdec_json_t* object) {
             ptr = ptr->next;
         }
 
-        strcat(string, "\n}");
+        strcat(string, "}");
     } else if (object->json_type == SERDEC_JSON_ARRAY) {
-        strcat(string, "[\n");
+        strcat(string, "[");
 
         serdec_json_t* ptr = object->value.children->head;
         bool first = true;
         while (ptr) {
             if (!first)
-                strcat(string, ",\n");
+                strcat(string, ",");
 
             strcat(string, SERDEC_INDENT);
 
@@ -421,7 +421,7 @@ char* serdec_json_stringify(serdec_json_t* object) {
             ptr = ptr->next;
         }
 
-        strcat(string, "\n]");
+        strcat(string, "]");
     } else {
         // Primitive node
         switch (object->json_type) {
