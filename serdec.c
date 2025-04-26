@@ -44,7 +44,16 @@ struct serdec_json {
 };
 
 serdec_json_t* serdec_json_new_node(void) {
+    serdec_json_t* node = malloc(sizeof(serdec_json_t));
+    if (!node)
+        return NULL;
 
+    node->key = NULL;
+    node->json_type = SERDEC_JSON_NULL;
+    memset(&node->value, 0, sizeof(node->value));
+    node->next = NULL;
+
+    return node;
 }
 
 serdec_json_t* serdec_json_new_null(void) {
