@@ -2,29 +2,21 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c23 -Iinclude
 
-# Source and output
+# Directories
+BUILD_DIR = build
 SRC = src/serdec_json.c
-OBJ = $(SRC:.c=.o)
-TARGET = libserdec_json.a
+OBJ = $(BUILD_DIR)/serdec_json.o
+TARGET = $(BUILD_DIR)/libserdec_json.a
 
 # Test
 TEST_SRC = tests/test_basic.c
-TEST_BIN = tests/test_basic
+TEST_BIN = $(BUILD_DIR)/test_basic
 
-.PHONY: all clean test
+# Examples
+EXAMPLES_SRC = $(wildcard examples/*.c)
+EXAMPLES_BIN = $(patsubst examples/%.c, $(BUILD_DIR)/%, $(EXAMPLES_SRC))
 
-EXAMPLES = examples/example_basic examples/example_array examples/example_nested
-
-examples: $(EXAMPLES)
-
-examples/example_basic: examples/example_basic.c src/serdec_json.c
-	$(CC) $(CFLAGS) $^ -o $@
-
-examples/example_array: examples/example_array.c src/serdec_json.c
-	$(CC) $(CFLAGS) $^ -o $@
-
-examples/example_nested: examples/example_nested.c src/serdec_json.c
-	$(CC) $(CFLAGS) $^ -o $@
+.PHONY: all clean test examples run-tests
 
 # Default target
 all: $(TARGET)
@@ -33,11 +25,28 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	ar rcs $@ $^
 
+# Object build rule
+$(BUILD_DIR)/%.o: src/%.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Create build dir if not exists
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
 # Build and run tests
-test: $(TARGET) $(TEST_SRC)
-	$(CC) $(CFLAGS) $(TEST_SRC) src/serdec_json.c -o $(TEST_BIN)
+test: $(TEST_BIN)
 	./$(TEST_BIN)
+
+$(TEST_BIN): $(TEST_SRC) $(SRC) | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(TEST_SRC) $(SRC) -o $@
+
+# Build all examples
+examples: $(EXAMPLES_BIN)
+
+# Rule for each example
+$(BUILD_DIR)/%: examples/%.c $(SRC) | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
 
 # Clean build artifacts
 clean:
-	rm -f $(OBJ) $(TARGET) $(TEST_BIN)
+	rm -rf $(BUILD_DIR)

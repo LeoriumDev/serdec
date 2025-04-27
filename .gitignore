@@ -1,1 +1,20 @@
+# macOS system files
 .DS_Store
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.out
+*.exe
+
+# Build directories
+/build/
+bin/
+obj/
+
+# Test binaries
+tests/test_basic
+examples/example_basic
+examples/example_array
+examples/example_nested
