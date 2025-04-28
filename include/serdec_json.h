@@ -42,13 +42,13 @@ extern "C" {
 #define sjson_list_append    serdec_json_list_append
 
 
-/* Initial size (in bytes) for the JSON serialization buffer (default: 256). */
+/* Initial size (in bytes) for the JSON serialization buffer. */
 #define SERDEC_INITIAL_BUFFER_SIZE 256
 
-/* Growth multiplier for the buffer when it runs out of space (default: 2x). */
+/* Growth multiplier for the buffer when it runs out of space. */
 #define SERDEC_BUFFER_GROWTH_FACTOR 2
 
-/* Default indentation (4 spaces) used when serializing JSON with formatting. */
+/* Default indentation used when serializing formatted JSON. */
 #define SERDEC_INDENT "\x20\x20\x20\x20"
 
 /* Avoid C compiler automatically cast bool to int */
@@ -80,17 +80,37 @@ serdec_json_t* serdec_json_new_array  (void);
 serdec_json_t* serdec_json_new_object (void);
 
 /* JSON object field appending functions */
-bool serdec_json_add_null      (serdec_json_t* object, const char* key, void* null);
-bool serdec_json_add_bool      (serdec_json_t* object, const char* key, bool value);
-bool serdec_json_add_int       (serdec_json_t* object, const char* key, int64_t value);
-bool serdec_json_add_float     (serdec_json_t* object, const char* key, double value);
-bool serdec_json_add_string    (serdec_json_t* object, const char* key, const char* value);
-bool serdec_json_add_object    (serdec_json_t* object, const char* key, serdec_json_t* value);
-bool serdec_json_add_array     (serdec_json_t* object, const char* key, serdec_json_t* value);
-bool serdec_json_list_append   (serdec_json_t* object, serdec_json_t* value);
-bool serdec_json_array_append  (serdec_json_t* object, serdec_json_t* value);
 
-/* Automatically dispatch to the correct serdec_json_add_* function based on value type (C11 _Generic). */
+/** 
+ * The 'null' parameter exists to match the signature used by generic dispatch;
+ * it is ignored during execution.
+ */
+bool serdec_json_add_null      (serdec_json_t* object, const char* key,
+                                void* null);
+bool serdec_json_add_bool      (serdec_json_t* object, const char* key,
+                                bool value);
+bool serdec_json_add_int       (serdec_json_t* object, const char* key,
+                                int64_t value);
+bool serdec_json_add_float     (serdec_json_t* object, const char* key,
+                                double value);
+bool serdec_json_add_string    (serdec_json_t* object, const char* key,
+                                const char* value);
+bool serdec_json_add_object    (serdec_json_t* object, const char* key,
+                                serdec_json_t* value);
+bool serdec_json_add_array     (serdec_json_t* object, const char* key,
+                                serdec_json_t* value);
+
+
+/* Append a value node to the internal list of an object or array. */
+bool serdec_json_list_append(serdec_json_t* object, serdec_json_t* value);
+
+/* Append a value node to a JSON array. */
+bool serdec_json_array_append(serdec_json_t* object, serdec_json_t* value);
+
+/* 
+ * Automatically dispatch to the correct serdec_json_add_* function based on
+ * value type (C11 _Generic).
+ */
 #if __STDC_VERSION__ >= 201112L
 #define serdec_json_add(object, key, value)                \
     _Generic((value),                                      \
