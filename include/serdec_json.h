@@ -32,19 +32,18 @@ extern "C" {
 #define sjson_new_array   serdec_json_new_array
 #define sjson_new_object  serdec_json_new_object
 
-#define sjson_add_null    serdec_json_add_null
-#define sjson_add_bool    serdec_json_add_bool
-#define sjson_add_int     serdec_json_add_int
-#define sjson_add_float   serdec_json_add_float
-#define sjson_add_string  serdec_json_add_string
-#define sjson_add_array   serdec_json_add_array
-#define sjson_add_object  serdec_json_add_object
-#define sjson_array_add   serdec_json_array_add
-#define sjson_list_add    serdec_json_list_add
+#define sjson_add_null       serdec_json_add_null
+#define sjson_add_bool       serdec_json_add_bool
+#define sjson_add_int        serdec_json_add_int
+#define sjson_add_float      serdec_json_add_float
+#define sjson_add_string     serdec_json_add_string
+#define sjson_add_array      serdec_json_add_array
+#define sjson_add_object     serdec_json_add_object
+#define sjson_list_append    serdec_json_list_append
 
 
 /* Initial size (in bytes) for the JSON serialization buffer (default: 256). */
-#define SERDEC_INITIAL_BUFFER_SIZE 4096
+#define SERDEC_INITIAL_BUFFER_SIZE 256
 
 /* Growth multiplier for the buffer when it runs out of space (default: 2x). */
 #define SERDEC_BUFFER_GROWTH_FACTOR 2
@@ -53,8 +52,7 @@ extern "C" {
 #define SERDEC_INDENT "\x20\x20\x20\x20"
 
 /* Avoid C compiler automatically cast bool to int */
-#define serdec_json_bool(value) ((bool) value)
-#define sjson_bool serdec_json_bool
+#define SERDEC_TO_BOOL(value) ((bool) value)
 
 /* JSON field types */
 typedef enum {
@@ -110,7 +108,7 @@ bool serdec_json_array_append  (serdec_json_t* object, serdec_json_t* value);
 #endif
 
 #if __STDC_VERSION__ >= 201112L
-#define serdec_json_array_push(array, value)                \
+#define serdec_json_array_push(array, value)                    \
     serdec_json_array_append(array,                             \
         _Generic((value),                                       \
             void*:                serdec_json_new_null,         \

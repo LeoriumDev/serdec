@@ -11,24 +11,23 @@
 
 #include "serdec_json.h"
 
-struct serdec_json_list {
-    struct serdec_json* head;
-    struct serdec_json* tail;
-    size_t length;
-};
-
 struct serdec_json {
     char* key;
     serdec_json_type json_type;
     union {
-        void* null;
         bool bool_val;
         int64_t int_val;
         double float_val;
         char* str_val;
         serdec_json_list_t* children;
     } value;
-    struct serdec_json* next;
+    serdec_json_t* next;
+};
+
+struct serdec_json_list {
+    serdec_json_t* head;
+    serdec_json_t* tail;
+    size_t length;
 };
 
 serdec_json_t* serdec_json_new_node(void) {
@@ -158,7 +157,7 @@ bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
 }
 
 bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
-    if (!object || !key || object->json_type != SERDEC_JSON_OBJECT||
+    if (!object || !key || object->json_type != SERDEC_JSON_OBJECT ||
         !object->value.children)
         return false;
 
@@ -260,7 +259,7 @@ bool serdec_json_add_object(serdec_json_t* object, const char* key, serdec_json_
 }
 
 bool serdec_json_add_array(serdec_json_t* object, const char* key, serdec_json_t* value) {
-    if (!object ||  value->json_type != SERDEC_JSON_ARRAY)
+    if (!object || !key || value->json_type != SERDEC_JSON_ARRAY)
         return false;
 
     serdec_json_t* new_node = serdec_json_new_array();
@@ -310,7 +309,7 @@ char* serdec_json_stringify(serdec_json_t* object) {
         return NULL;
     string[0] = '\0';
 
-    char tmp[4096];
+    char tmp[256];
     bool need_comma = false;
 
     if (object->json_type == SERDEC_JSON_OBJECT) {
@@ -424,7 +423,6 @@ char* serdec_json_stringify(serdec_json_t* object) {
 
         strcat(string, "]");
     } else {
-        // Primitive node
         switch (object->json_type) {
             case SERDEC_JSON_NULL:
                 strcat(string, "null");
