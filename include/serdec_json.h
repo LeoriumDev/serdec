@@ -39,11 +39,12 @@ extern "C" {
 #define sjson_add_string     serdec_json_add_string
 #define sjson_add_array      serdec_json_add_array
 #define sjson_add_object     serdec_json_add_object
-#define sjson_list_append    serdec_json_list_append
 
+#define sjson_list_append    serdec_json_list_append
+#define sjson_array_append   serdec_json_array_append
 
 /* Initial size (in bytes) for the JSON serialization buffer. */
-#define SERDEC_INITIAL_BUFFER_SIZE 256
+#define SERDEC_INITIAL_BUFFER_SIZE 512
 
 /* Growth multiplier for the buffer when it runs out of space. */
 #define SERDEC_BUFFER_GROWTH_FACTOR 2
@@ -66,12 +67,12 @@ typedef enum {
 } serdec_json_type;
 
 /* JSON object structures */
-typedef struct serdec_json_list  serdec_json_list_t;
 typedef struct serdec_json       serdec_json_t;
+typedef struct serdec_json_list  serdec_json_list_t;
 
 /* JSON object creation functions */
 serdec_json_t* serdec_json_new_node   (void);
-serdec_json_t* serdec_json_new_null   (void);
+serdec_json_t* serdec_json_new_null   (void* null);
 serdec_json_t* serdec_json_new_bool   (bool value);
 serdec_json_t* serdec_json_new_int    (int64_t value);
 serdec_json_t* serdec_json_new_float  (double value);
@@ -144,10 +145,17 @@ bool serdec_json_array_append(serdec_json_t* object, serdec_json_t* value);
         )(value))
 #endif
 
-/* Utility */
-char*          serdec_json_stringify (serdec_json_t* node);
-serdec_json_t* serdec_json_parse     (const char* json_string);
-void           serdec_json_free      (serdec_json_t* node);
+/* JSON Object Stringify functions */
+char* serdec_json_stringify           (serdec_json_t* node);
+char* serdec_json_stringify_primitive (serdec_json_t* object);
+char* serdec_json_stringify_array     (serdec_json_t* object);
+char* serdec_json_stringify_object    (serdec_json_t* object);
+
+/* JSON object parser */
+serdec_json_t* serdec_json_parse(const char* json_string);
+
+/* release memory allocated in JSON object */
+void serdec_json_free(serdec_json_t* node);
 
 #ifdef __cplusplus
 }

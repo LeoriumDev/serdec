@@ -1,6 +1,6 @@
 # Compiler
-CC = gcc
-CFLAGS = -Wall -Wextra -Wpedantic -Wshadow -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wundef -Wredundant-decls -std=c23 -Iinclude
+CC = clang
+CFLAGS = -Wall -g -O0 -fno-omit-frame-pointer -Wextra -Wpedantic -Wshadow -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wundef -Wredundant-decls -std=c2y -Iinclude
 # Directories
 BUILD_DIR = build
 SRC = src/serdec_json.c
@@ -42,12 +42,12 @@ $(TEST_BIN): $(TEST_SRC) $(SRC) | $(BUILD_DIR)
 # Build all examples
 examples: $(EXAMPLES_BIN)
 
-# Run all examples (with timeout)
+# Run all examples (with timeout) and save pure output to build/test.json
 run-examples: examples
-	@echo "✨ Running Examples:"
+	@mkdir -p build
+	@> build/test.json # clear previous output
 	@for bin in $(EXAMPLES_BIN); do \
-		echo "🚀 Running $$bin"; \
-		timeout 5s $$bin || echo "⚠️  $$bin timed out"; \
+		timeout 10s $$bin >> build/test.json 2>&1 || echo "$$bin timed out" >> build/test.json; \
 	done
 
 # Rule for each example
