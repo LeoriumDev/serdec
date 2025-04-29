@@ -306,7 +306,7 @@ bool serdec_json_array_append(serdec_json_t* object, serdec_json_t* element) {
     return serdec_json_list_append(object, element);
 }
 
-char* serdec_json_stringify(serdec_json_t* object) {
+char* serdec_json_stringify_internal(serdec_json_t* object, bool pretty_print) {
     if (!object)
         return NULL;
 
@@ -319,6 +319,7 @@ char* serdec_json_stringify(serdec_json_t* object) {
     tmp[0] = '\0';
 
     serdec_json_t* data = object->value.children->head;
+    size_t indent_level = 0;
 
     if (!data)
         return NULL;
@@ -331,17 +332,14 @@ char* serdec_json_stringify(serdec_json_t* object) {
         case SERDEC_JSON_BOOLEAN:
         case SERDEC_JSON_FLOAT:
         case SERDEC_JSON_STRING:
-            char* str = serdec_json_stringify_primitive(data);
-            if (!str)
-                break;
-            strcat(buffer, str);
-            free(str);
+            strcat(buffer, serdec_json_stringify_primitive(data, indent_level + 1, pretty_print));
             break;
         case SERDEC_JSON_ARRAY:
-            strcat(buffer, serdec_json_stringify_array(data));
+            strcat(buffer, serdec_json_stringify_array(data, indent_level + 1, pretty_print));
             break;
         case SERDEC_JSON_OBJECT:
-            strcat(buffer, serdec_json_stringify_object(data));
+            strcat(buffer, serdec_json_stringify_object(data, indent_level + 1, pretty_print));
+            break;
         default:
             break;
         }
@@ -353,7 +351,15 @@ char* serdec_json_stringify(serdec_json_t* object) {
     return buffer;
 }
 
-char* serdec_json_stringify_primitive(serdec_json_t* object) {
+char* serdec_json_stringify(serdec_json_t* object) {
+    return serdec_json_stringify_internal(object, true);
+}
+
+char* serdec_json_stringify_raw(serdec_json_t* object) {
+    return serdec_json_stringify_internal(object, false);
+}
+
+char* serdec_json_stringify_primitive(serdec_json_t* object, size_t indent_level, bool pretty_print) {
     if (!object ||
         (object->json_type != SERDEC_JSON_NULL &&
         object->json_type != SERDEC_JSON_BOOLEAN &&
@@ -361,7 +367,6 @@ char* serdec_json_stringify_primitive(serdec_json_t* object) {
         object->json_type != SERDEC_JSON_FLOAT &&
         object->json_type != SERDEC_JSON_STRING))
         return NULL;
-    
     char* buffer = malloc(SERDEC_INITIAL_BUFFER_SIZE);
     char* tmp = malloc(SERDEC_INITIAL_BUFFER_SIZE);
     if (!buffer || !tmp)
@@ -369,7 +374,7 @@ char* serdec_json_stringify_primitive(serdec_json_t* object) {
 
     buffer[0] = '\0';
     tmp[0] = '\0';
-    strcpy(buffer, SERDEC_INDENT);
+    serdec_add_indent(buffer, indent_level);
 
     if (object->key) {
         strcat(buffer, "\"");
@@ -403,7 +408,7 @@ char* serdec_json_stringify_primitive(serdec_json_t* object) {
     return buffer;
 }
 
-char* serdec_json_stringify_array(serdec_json_t* object) {
+char* serdec_json_stringify_array(serdec_json_t* object, size_t indent_level, bool pretty_print) {
     if (!object || object->json_type != SERDEC_JSON_ARRAY)
         return NULL;
     
@@ -414,33 +419,34 @@ char* serdec_json_stringify_array(serdec_json_t* object) {
 
     buffer[0] = '\0';
     tmp[0] = '\0';
-    strcpy(buffer, SERDEC_INDENT);
+
+    serdec_add_indent(buffer, indent_level);
 
     if (object->key) {
         strcat(buffer, "\"");
         strcat(buffer, object->key);
-        strcat(buffer, "\": [\n");
-    } else {
-        strcpy(buffer, "[\n");
+        strcat(buffer, "\": ");
     }
+    strcat(buffer, "[\n");
 
     serdec_json_t* element = object->value.children->head;
     while (element) {
-        strcat(buffer, SERDEC_INDENT);
         if (element->json_type == SERDEC_JSON_ARRAY)
-            strcat(buffer, serdec_json_stringify_array(element));
+            strcat(buffer, serdec_json_stringify_array(element, indent_level+1, pretty_print));
         else if (element->json_type == SERDEC_JSON_OBJECT)
-            strcat(buffer, serdec_json_stringify_object(element));
+            strcat(buffer, serdec_json_stringify_object(element, indent_level+1, pretty_print));
         else
-            strcat(buffer, serdec_json_stringify_primitive(element));
+            strcat(buffer, serdec_json_stringify_primitive(element, indent_level+1, pretty_print));
 
-        strcat(buffer, element->next ? ",\n" :"\n" SERDEC_INDENT "]");
+        strcat(buffer, element->next ? ",\n" :"\n");
         element = element->next;
     }
+    serdec_add_indent(buffer, indent_level);
+    strcat(buffer, "]");
     return buffer;
 }
 
-char* serdec_json_stringify_object(serdec_json_t* object) {
+char* serdec_json_stringify_object(serdec_json_t* object, size_t indent_level, bool pretty_print) {
     if (!object || object->json_type != SERDEC_JSON_OBJECT)
         return NULL;
     
@@ -451,29 +457,29 @@ char* serdec_json_stringify_object(serdec_json_t* object) {
 
     buffer[0] = '\0';
     tmp[0] = '\0';
-    strcpy(buffer, SERDEC_INDENT);
+    serdec_add_indent(buffer, indent_level);
     if (object->key) {
         strcat(buffer, "\"");
         strcat(buffer, object->key);
         strcat(buffer, "\": {\n");
     } else {
-        strcpy(buffer, "{\n");
+        strcat(buffer, "{\n");
     }
 
     serdec_json_t* element = object->value.children->head;
     while (element) {
-        strcat(buffer, SERDEC_INDENT);
         if (element->json_type == SERDEC_JSON_ARRAY)
-            strcat(buffer, serdec_json_stringify_array(element));
+            strcat(buffer, serdec_json_stringify_array(element, indent_level+1, pretty_print));
         else if (element->json_type == SERDEC_JSON_OBJECT)
-            strcat(buffer, serdec_json_stringify_object(element));
+            strcat(buffer, serdec_json_stringify_object(element, indent_level+1, pretty_print));
         else
-            strcat(buffer, serdec_json_stringify_primitive(element));
+            strcat(buffer, serdec_json_stringify_primitive(element, indent_level+1, pretty_print));
 
         strcat(buffer, element->next ? ",\n" :"\n");
         element = element->next;
     }
-    strcat(buffer, SERDEC_INDENT "}");
+    serdec_add_indent(buffer, indent_level);
+    strcat(buffer, "}");
     return buffer;
 }
 
@@ -508,4 +514,15 @@ void serdec_json_free(serdec_json_t* node) {
     }
 
     free(node);
+}
+
+void serdec_add_indent(char* buffer, size_t indent_level) {
+    if (!buffer)
+        return;
+    while (indent_level--)
+        strcat(buffer, SERDEC_INDENT);
+}
+
+serdec_json_t* serdec_json_object_return(serdec_json_t* object) {
+    return object;
 }

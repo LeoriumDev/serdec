@@ -140,23 +140,26 @@ bool serdec_json_array_append(serdec_json_t* object, serdec_json_t* value);
             const char*:          serdec_json_new_string,       \
             char*:                serdec_json_new_string,       \
             bool:                 serdec_json_new_bool,         \
-            serdec_json_t*:       (value),                      \
+            serdec_json_t*:       serdec_json_object_return,    \
             default:              serdec_json_new_null          \
         )(value))
 #endif
 
 /* JSON Object Stringify functions */
-char* serdec_json_stringify           (serdec_json_t* node);
-char* serdec_json_stringify_primitive (serdec_json_t* object);
-char* serdec_json_stringify_array     (serdec_json_t* object);
-char* serdec_json_stringify_object    (serdec_json_t* object);
+char* serdec_json_stringify           (serdec_json_t* object);
+char* serdec_json_stringify_raw       (serdec_json_t* object);
+char* serdec_json_stringify_internal  (serdec_json_t* object, bool pretty_print);
+char* serdec_json_stringify_primitive (serdec_json_t* object, size_t indent_level, bool pretty_print);
+char* serdec_json_stringify_array     (serdec_json_t* object, size_t indent_level, bool pretty_print);
+char* serdec_json_stringify_object    (serdec_json_t* object, size_t indent_level, bool pretty_print);
 
 /* JSON object parser */
 serdec_json_t* serdec_json_parse(const char* json_string);
 
 /* release memory allocated in JSON object */
 void serdec_json_free(serdec_json_t* node);
-
+void serdec_add_indent(char* buffer, size_t indent_level);
+serdec_json_t* serdec_json_object_return(serdec_json_t* object);
 #ifdef __cplusplus
 }
 #endif

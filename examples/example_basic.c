@@ -11,6 +11,8 @@ int main(void) {
     serdec_json_add_float(root, "float_direct", 3.1415);
     serdec_json_add_string(root, "string_direct", "Hello, Serdec!");
 
+    serdec_json_t* object = serdec_json_new_object();
+    serdec_json_add_string(object, "str", "Hello~");
     // Create an array
     serdec_json_t* array = serdec_json_new_array();
 
@@ -19,6 +21,7 @@ int main(void) {
     serdec_json_array_push(array, true);         // boolean
     serdec_json_array_push(array, 456);          // int
     serdec_json_array_push(array, 7.89);         // float
+    serdec_json_array_push(array, object);
     serdec_json_array_push(array, "Array String"); // string
 
     // Add the array into the object
@@ -27,7 +30,6 @@ int main(void) {
     // Add a nested object
     serdec_json_t* nested = serdec_json_new_object();
     serdec_json_add_array(nested, "array", array);
-    sjson_add_string(nested, "nested_key", "nested_value"); // using sjson_* alias
     serdec_json_add_object(root, "object_direct", nested);
     // Now use the generic macro to add various fields
     serdec_json_add(root, "null_macro", NULL);
@@ -35,6 +37,8 @@ int main(void) {
     serdec_json_add(root, "int_macro", 789);
     serdec_json_add(root, "float_macro", 6.28);
     serdec_json_add(root, "string_macro", "Macro String");
+    serdec_json_add_object(nested, "object1", object);
+    sjson_add_string(nested, "nested_key", "nested_value"); // using sjson_* alias
 
     // Serialize the whole JSON
     char* json_string = serdec_json_stringify(root);
