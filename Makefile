@@ -1,6 +1,6 @@
 # Compiler
 CC = clang
-CFLAGS = -Wall -g -O0 -fno-omit-frame-pointer -Wextra -Wpedantic -Wshadow -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wundef -Wredundant-decls -std=c2y -Iinclude
+CFLAGS = -Wall -g -O0 -fno-omit-frame-pointer -Wextra -Wpedantic -Wshadow -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wundef -Wredundant-decls -std=c23 -Iinclude
 # Directories
 BUILD_DIR = build
 SRC = src/serdec_json.c
