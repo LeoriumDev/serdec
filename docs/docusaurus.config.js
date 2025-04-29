@@ -6,8 +6,8 @@ const config = {
   tagline: 'A C library for serializing and deserializing C data.',
   favicon: 'img/favicon.ico',
 
-  url: 'https://docs.leorium.com',
-  baseUrl: '/serdec/',
+  url: 'https://serdec.dev',
+  baseUrl: '/',
   onBrokenMarkdownLinks: 'warn',
 
   i18n: {
