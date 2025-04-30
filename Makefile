@@ -54,6 +54,9 @@ run-examples: examples
 $(BUILD_DIR)/%: examples/%.c $(SRC) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $^ -o $@
 
+lint:
+	clang-tidy src/*.c examples/*.c tests/*.c -- -Iinclude
+	
 # Clean build artifacts
 clean:
 	rm -rf $(BUILD_DIR)
