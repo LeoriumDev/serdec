@@ -45,9 +45,13 @@ examples: $(EXAMPLES_BIN)
 # Run all examples (with timeout) and save pure output to build/test.json
 run-examples: examples
 	@mkdir -p build
-	@> build/test.json # clear previous output
 	@for bin in $(EXAMPLES_BIN); do \
-		timeout 10s $$bin >> build/test.json 2>&1 || echo "$$bin timed out" >> build/test.json; \
+		base=$$(basename $$bin); \
+		json_out="build/$$base.json"; \
+		log_out="build/$$base.json.log"; \
+		echo "🚀 Running $$bin > $$json_out"; \
+		{ time timeout 10s $$bin > $$json_out 2> $$log_out; } || echo "$$bin timed out" >> $$log_out; \
+		if [ ! -s $$log_out ]; then rm -f $$log_out; fi; \
 	done
 
 # Rule for each example
