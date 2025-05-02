@@ -1,6 +1,12 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Build](https://github.com/LeoriumDev/serdec/actions/workflows/build.yml/badge.svg)](https://github.com/LeoriumDev/serdec/actions/workflows/build.yml)
+![C23](https://img.shields.io/badge/C-Standard-C23-orange)  
+[![Platform](https://img.shields.io/badge/platform-Cross--Platform-lightgrey)]()
+
 # Serdec
 A lightweight C serialization and deserialization library for working with JSON (and future formats like YAML, TOML, XML, CSV).
 ---
+## 🚧 This library is under active development. Breaking changes may occur.
 
 ## ✨ Features
 
@@ -127,4 +133,3 @@ For major changes, please open an issue first to discuss what you would like to 
 
 - Inspired by lightweight C libraries like cJSON and jansson.
 - Built from scratch for full control over serialization and future extensibility.
-
