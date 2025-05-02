@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Build](https://github.com/LeoriumDev/serdec/actions/workflows/build.yml/badge.svg)](https://github.com/LeoriumDev/serdec/actions/workflows/build.yml)
-![C23](https://img.shields.io/badge/C_Standard-C23-blue)
+[![C23](https://img.shields.io/badge/C_Standard-C23-blue)]()
 [![Platform](https://img.shields.io/badge/platform-Cross--Platform-lightgrey)]()
 
 # Serdec
