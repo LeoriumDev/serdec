@@ -619,3 +619,11 @@ bool serdec_buffer_append(serdec_buffer_t *dst, const char *src, size_t len) {
     return true;
 }
 
+bool serdec_buffer_putchar(serdec_buffer_t *buf, char chr) {
+    if (!serdec_buffer_reserve(buf, 1))
+        return false;
+
+    buf->data[buf->length++] = chr;
+    buf->data[buf->length] = '\0';
+    return true;
+}
