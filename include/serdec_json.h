@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -151,6 +152,9 @@ bool serdec_buffer_putchar(serdec_buffer_t* buf, char chr);
 size_t serdec_buffer_length(serdec_buffer_t* buf);
 void serdec_buffer_clear(serdec_buffer_t* buf);
 void serdec_buffer_free(serdec_buffer_t* buf);
+char* serdec_buffer_take(serdec_buffer_t* buf);
+bool serdec_buffer_vprintf(serdec_buffer_t* buf, const char* fmt, va_list args);
+bool serdec_buffer_printf(serdec_buffer_t* buf, const char* fmt, ...);
 
 /* JSON Object Stringify functions */
 char* serdec_json_stringify           (serdec_json_t* object);
@@ -165,7 +169,7 @@ serdec_json_t* serdec_json_parse(const char* json_string);
 
 /* release memory allocated in JSON object */
 void serdec_json_free(serdec_json_t* node);
-void serdec_add_indent(char* buffer, size_t indent_level);
+void serdec_add_indent(serdec_buffer_t* buffer, size_t indent_level);
 
 __attribute__((used))
 static inline serdec_json_t* serdec_json_object_return(serdec_json_t* object) {
