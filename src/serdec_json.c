@@ -631,3 +631,11 @@ bool serdec_buffer_putchar(serdec_buffer_t *buf, char chr) {
 size_t serdec_buffer_length(serdec_buffer_t *buf) {
     return buf->length;
 }
+
+void serdec_buffer_clear(serdec_buffer_t *buf) {
+    if (!buf || !buf->data)
+        return;
+
+    buf->length = 0;
+    buf->data[0] = '\0';
+}
