@@ -628,6 +628,15 @@ bool serdec_buffer_putchar(serdec_buffer_t *buf, char chr) {
     return true;
 }
 
+char* serdec_buffer_take(serdec_buffer_t* buf) {
+    if (!buf || !buf->data)
+        return NULL;
+    char* data = buf->data;
+    buf->data = NULL;
+    free(buf);
+    return data;
+}
+
 size_t serdec_buffer_length(serdec_buffer_t *buf) {
     return buf->length;
 }
@@ -643,7 +652,7 @@ void serdec_buffer_clear(serdec_buffer_t *buf) {
 void serdec_buffer_free(serdec_buffer_t *buf) {
     if (!buf)
         return;
-    
+
     free(buf->data);
     free(buf);
 }
