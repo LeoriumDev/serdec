@@ -639,3 +639,11 @@ void serdec_buffer_clear(serdec_buffer_t *buf) {
     buf->length = 0;
     buf->data[0] = '\0';
 }
+
+void serdec_buffer_free(serdec_buffer_t *buf) {
+    if (!buf)
+        return;
+    
+    free(buf->data);
+    free(buf);
+}
