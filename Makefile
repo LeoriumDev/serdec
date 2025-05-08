@@ -50,7 +50,7 @@ run-examples: examples
 		json_out="build/$$base.json"; \
 		log_out="build/$$base.json.log"; \
 		echo "🚀 Running $$bin > $$json_out"; \
-		{ time timeout 10s $$bin > $$json_out 2> $$log_out; } || echo "$$bin timed out" >> $$log_out; \
+		{ time $$bin > $$json_out 2> $$log_out; } || echo "$$bin timed out" >> $$log_out; \
 		if [ ! -s $$log_out ]; then rm -f $$log_out; fi; \
 	done
 

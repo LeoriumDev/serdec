@@ -352,10 +352,11 @@ char* serdec_json_stringify_internal(serdec_json_t* object, bool pretty_print) {
                 data, indent_level + 1, pretty_print));
             break;
         case SERDEC_JSON_OBJECT:
-            serdec_buffer_append_str(buf, serdec_json_stringify_array(
+            serdec_buffer_append_str(buf, serdec_json_stringify_object(
                 data, indent_level + 1, pretty_print));
             break;
         default:
+            serdec_buffer_append_str(buf, "\"\"");
             break;
         }
         if (pretty_print)
@@ -394,7 +395,7 @@ char* serdec_json_stringify_primitive(serdec_json_t* object, size_t indent_level
         serdec_add_indent(buf, indent_level);
 
     if (object->key)
-        serdec_buffer_printf(buf, "\"%s\"", object->key);
+        serdec_buffer_printf(buf, "\"%s\":%s", object->key, pretty_print ? " " : "");
 
     switch (object->json_type) {
     case SERDEC_JSON_NULL:
@@ -410,12 +411,10 @@ char* serdec_json_stringify_primitive(serdec_json_t* object, size_t indent_level
         serdec_buffer_printf(buf, "%lf", object->value.float_val);
         break;
     case SERDEC_JSON_STRING:
-        serdec_buffer_putchar(buf, '\'');
-        serdec_buffer_append_str(buf, object->value.str_val);
-        serdec_buffer_putchar(buf, '\'');
+        serdec_buffer_printf(buf, "\"%s\"", object->value.str_val);
         break;
     default:
-        serdec_buffer_append_str(buf, "");
+        serdec_buffer_append_str(buf, "\"\"");
         break;
     }
     char* output = serdec_buffer_take(buf);
@@ -434,7 +433,7 @@ char* serdec_json_stringify_array(serdec_json_t* object, size_t indent_level, bo
         serdec_add_indent(buf, indent_level);
 
     if (object->key)
-        serdec_buffer_printf(buf, "\"%s\"", object->key);
+        serdec_buffer_printf(buf, "\"%s\":%s", object->key, pretty_print ? " " : "");
     
     serdec_buffer_append_str(buf, pretty_print ? "[\n" : "[");
 

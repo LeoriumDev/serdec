@@ -145,6 +145,10 @@ bool serdec_buffer_append(serdec_buffer_t* dst,
 __attribute__((used))
 static inline bool serdec_buffer_append_str(serdec_buffer_t* dst, 
                                                         const char* str) {
+    if (!dst)
+        return false;
+    if (!str)
+        return true;
     return serdec_buffer_append(dst, str, strlen(str));
 }
 bool serdec_buffer_reserve(serdec_buffer_t* buf, size_t extra_size);
