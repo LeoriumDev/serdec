@@ -602,3 +602,20 @@ bool serdec_buffer_reserve(serdec_buffer_t* buf, size_t extra_size) {
     buf->capacity = new_capacity;
     return true;
 }
+
+bool serdec_buffer_append(serdec_buffer_t *dst, const char *src, size_t len) {
+    if (!len)
+        return true;
+
+    if (!dst || !src)
+        return false;
+    
+    if (!serdec_buffer_reserve(dst, len))
+        return false;
+
+    memcpy(dst->data + dst->length, src, len);
+    dst->length += len;
+    dst->data[dst->length] = '\0';
+    return true;
+}
+
