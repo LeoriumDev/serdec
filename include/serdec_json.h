@@ -146,7 +146,7 @@ static inline bool serdec_buffer_append_str(serdec_buffer_t* dst,
                                                         const char* str) {
     return serdec_buffer_append(dst, str, strlen(str));
 }
-bool serdec_buffer_reserve(serdec_buffer_t* buf, size_t size);
+bool serdec_buffer_reserve(serdec_buffer_t* buf, size_t extra_size);
 bool serdec_buffer_putchar(serdec_buffer_t* buf, char chr);
 size_t serdec_buffer_length(serdec_buffer_t* buf);
 void serdec_buffer_clear(serdec_buffer_t* buf);

@@ -12,6 +12,7 @@
 #include "serdec_json.h"
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 /* JSON field types */
 typedef enum {
@@ -571,8 +572,33 @@ serdec_buffer_t* serdec_buffer_new(size_t initial_capacity) {
         free(buf);
         return NULL;
     }
+
     buf->capacity = capacity + 1;
     buf->length = 0;
     buf->data[0] = '\0';
     return buf;
+}
+
+bool serdec_buffer_reserve(serdec_buffer_t* buf, size_t extra_size) {
+    if (!buf)
+        return false;
+
+    size_t needed_size = buf->length + extra_size + 1;
+    if (buf->capacity >= needed_size)
+        return true;
+
+    size_t new_capacity = buf->capacity;
+    while (new_capacity < needed_size) {
+        if (new_capacity > SIZE_MAX / SERDEC_BUFFER_GROWTH_FACTOR)
+            return false;
+        new_capacity *= SERDEC_BUFFER_GROWTH_FACTOR;
+    }
+
+    char* new_data = realloc(buf->data, new_capacity);
+    if (!new_data)
+        return false;
+
+    buf->data = new_data;
+    buf->capacity = new_capacity;
+    return true;
 }
