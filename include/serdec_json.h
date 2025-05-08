@@ -44,7 +44,7 @@ extern "C" {
 #define sjson_array_append   serdec_json_array_append
 
 /* Initial size (in bytes) for the JSON serialization buffer. */
-#define SERDEC_INITIAL_BUFFER_SIZE 512
+#define SERDEC_INITIAL_BUFFER_SIZE 256
 
 /* Growth multiplier for the buffer when it runs out of space. */
 #define SERDEC_BUFFER_GROWTH_FACTOR 2
@@ -54,6 +54,9 @@ extern "C" {
 
 /* Avoid C compiler automatically cast bool to int */
 #define SERDEC_TO_BOOL(value) ((bool) value)
+
+/* Dynamic Buffer */
+typedef struct serdec_buffer serdec_buffer_t;
 
 /* JSON object structures */
 typedef struct serdec_json       serdec_json_t;
@@ -133,6 +136,21 @@ bool serdec_json_array_append(serdec_json_t* object, serdec_json_t* value);
             default:              serdec_json_new_null          \
         )(value))
 #endif
+
+/* Dynamic buffer functions */
+serdec_buffer_t* serdec_buffer_new(size_t initial_capacity);
+bool serdec_buffer_append(serdec_buffer_t* dst,
+                                      const char* src, size_t len);
+__attribute__((used))
+static inline bool serdec_buffer_append_str(serdec_buffer_t* dst, 
+                                                        const char* str) {
+    return serdec_buffer_append(dst, str, strlen(str));
+}
+bool serdec_buffer_reserve(serdec_buffer_t* buf, size_t size);
+bool serdec_buffer_putchar(serdec_buffer_t* buf, char chr);
+size_t serdec_buffer_length(serdec_buffer_t* buf);
+void serdec_buffer_clear(serdec_buffer_t* buf);
+void serdec_buffer_free(serdec_buffer_t* buf);
 
 /* JSON Object Stringify functions */
 char* serdec_json_stringify           (serdec_json_t* object);

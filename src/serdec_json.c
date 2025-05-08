@@ -22,6 +22,12 @@ typedef enum {
     SERDEC_JSON_OBJECT
 } serdec_json_type;
 
+struct serdec_buffer {
+    char* data;
+    size_t length;
+    size_t capacity;
+};
+
 struct serdec_json {
     char* key;
     serdec_json_type json_type;
