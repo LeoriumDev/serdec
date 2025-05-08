@@ -10,6 +10,8 @@
  */ 
 
 #include "serdec_json.h"
+#include <stddef.h>
+#include <stdint.h>
 
 /* JSON field types */
 typedef enum {
@@ -551,4 +553,26 @@ void serdec_add_indent(char* buffer, size_t indent_level) {
         return;
     while (indent_level--)
         strcat(buffer, SERDEC_INDENT);
+}
+
+serdec_buffer_t* serdec_buffer_new(size_t initial_capacity) {
+    size_t capacity = (initial_capacity < SERDEC_INITIAL_BUFFER_SIZE) ?
+                      SERDEC_INITIAL_BUFFER_SIZE : initial_capacity;
+
+    if (capacity > SIZE_MAX - 1)
+        capacity = SIZE_MAX - 2;
+
+    serdec_buffer_t* buf = calloc(1, sizeof(*buf));
+    if (!buf)
+        return NULL;
+
+    buf->data = malloc(capacity + 1);
+    if (!buf->data) {
+        free(buf);
+        return NULL;
+    }
+    buf->capacity = capacity + 1;
+    buf->length = 0;
+    buf->data[0] = '\0';
+    return buf;
 }
