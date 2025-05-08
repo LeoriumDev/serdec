@@ -627,3 +627,7 @@ bool serdec_buffer_putchar(serdec_buffer_t *buf, char chr) {
     buf->data[buf->length] = '\0';
     return true;
 }
+
+size_t serdec_buffer_length(serdec_buffer_t *buf) {
+    return buf->length;
+}
