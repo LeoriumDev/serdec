@@ -330,8 +330,8 @@ char* serdec_json_stringify_internal(serdec_json_t* object, bool pretty_print) {
     if (!object)
         return NULL;
 
-    char* buffer = malloc(SERDEC_INITIAL_BUFFER_SIZE);
-    char* tmp = malloc(SERDEC_INITIAL_BUFFER_SIZE);
+    char* buffer = malloc(SERDEC_DEFAULT_BUFFER_CAP);
+    char* tmp = malloc(SERDEC_DEFAULT_BUFFER_CAP);
     if (!buffer || !tmp)
         return NULL;
 
@@ -389,8 +389,8 @@ char* serdec_json_stringify_primitive(serdec_json_t* object, size_t indent_level
         object->json_type != SERDEC_JSON_FLOAT &&
         object->json_type != SERDEC_JSON_STRING))
         return NULL;
-    char* buffer = malloc(SERDEC_INITIAL_BUFFER_SIZE);
-    char* tmp = malloc(SERDEC_INITIAL_BUFFER_SIZE);
+    char* buffer = malloc(SERDEC_DEFAULT_BUFFER_CAP);
+    char* tmp = malloc(SERDEC_DEFAULT_BUFFER_CAP);
     if (!buffer || !tmp)
         return NULL;
 
@@ -435,8 +435,8 @@ char* serdec_json_stringify_array(serdec_json_t* object, size_t indent_level, bo
     if (!object || object->json_type != SERDEC_JSON_ARRAY)
         return NULL;
     
-    char* buffer = malloc(SERDEC_INITIAL_BUFFER_SIZE);
-    char* tmp = malloc(SERDEC_INITIAL_BUFFER_SIZE);
+    char* buffer = malloc(SERDEC_DEFAULT_BUFFER_CAP);
+    char* tmp = malloc(SERDEC_DEFAULT_BUFFER_CAP);
     if (!buffer || !tmp)
         return NULL;
 
@@ -478,8 +478,8 @@ char* serdec_json_stringify_object(serdec_json_t* object, size_t indent_level, b
     if (!object || object->json_type != SERDEC_JSON_OBJECT)
         return NULL;
     
-    char* buffer = malloc(SERDEC_INITIAL_BUFFER_SIZE);
-    char* tmp = malloc(SERDEC_INITIAL_BUFFER_SIZE);
+    char* buffer = malloc(SERDEC_DEFAULT_BUFFER_CAP);
+    char* tmp = malloc(SERDEC_DEFAULT_BUFFER_CAP);
     if (!buffer || !tmp)
         return NULL;
 
@@ -557,8 +557,8 @@ void serdec_add_indent(char* buffer, size_t indent_level) {
 }
 
 serdec_buffer_t* serdec_buffer_new(size_t initial_capacity) {
-    size_t capacity = (initial_capacity < SERDEC_INITIAL_BUFFER_SIZE) ?
-                      SERDEC_INITIAL_BUFFER_SIZE : initial_capacity;
+    size_t capacity = (initial_capacity < SERDEC_DEFAULT_BUFFER_CAP) ?
+    SERDEC_DEFAULT_BUFFER_CAP : initial_capacity;
 
     if (capacity > SIZE_MAX - 1)
         capacity = SIZE_MAX - 2;

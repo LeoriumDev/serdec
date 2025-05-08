@@ -44,7 +44,7 @@ extern "C" {
 #define sjson_array_append   serdec_json_array_append
 
 /* Initial size (in bytes) for the JSON serialization buffer. */
-#define SERDEC_INITIAL_BUFFER_SIZE 256
+#define SERDEC_DEFAULT_BUFFER_CAP 256
 
 /* Growth multiplier for the buffer when it runs out of space. */
 #define SERDEC_BUFFER_GROWTH_FACTOR 2
