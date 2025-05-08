@@ -148,7 +148,12 @@ serdec_json_t* serdec_json_parse(const char* json_string);
 /* release memory allocated in JSON object */
 void serdec_json_free(serdec_json_t* node);
 void serdec_add_indent(char* buffer, size_t indent_level);
-serdec_json_t* serdec_json_object_return(serdec_json_t* object);
+
+__attribute__((used))
+static inline serdec_json_t* serdec_json_object_return(serdec_json_t* object) {
+    return object;
+}
+
 #ifdef __cplusplus
 }
 #endif

@@ -546,7 +546,3 @@ void serdec_add_indent(char* buffer, size_t indent_level) {
     while (indent_level--)
         strcat(buffer, SERDEC_INDENT);
 }
-
-serdec_json_t* serdec_json_object_return(serdec_json_t* object) {
-    return object;
-}
