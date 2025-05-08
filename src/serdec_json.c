@@ -11,16 +11,6 @@
 
 #include "serdec_json.h"
 
-enum serdec_json_type {
-    SERDEC_JSON_NULL    ,
-    SERDEC_JSON_BOOLEAN ,
-    SERDEC_JSON_INT     ,
-    SERDEC_JSON_FLOAT   ,
-    SERDEC_JSON_STRING  ,
-    SERDEC_JSON_ARRAY   ,
-    SERDEC_JSON_OBJECT
-};
-
 struct serdec_json {
     char* key;
     serdec_json_type json_type;

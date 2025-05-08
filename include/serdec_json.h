@@ -56,7 +56,15 @@ extern "C" {
 #define SERDEC_TO_BOOL(value) ((bool) value)
 
 /* JSON field types */
-typedef enum serdec_json_type serdec_json_type;
+typedef enum {
+    SERDEC_JSON_NULL    ,
+    SERDEC_JSON_BOOLEAN ,
+    SERDEC_JSON_INT     ,
+    SERDEC_JSON_FLOAT   ,
+    SERDEC_JSON_STRING  ,
+    SERDEC_JSON_ARRAY   ,
+    SERDEC_JSON_OBJECT
+} serdec_json_type;
 
 /* JSON object structures */
 typedef struct serdec_json       serdec_json_t;
