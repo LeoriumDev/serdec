@@ -13,8 +13,8 @@ OBJ        := $(patsubst src/%.c,$(BUILD_DIR)/%.o,$(SRC))
 TARGET     := $(BUILD_DIR)/libserdec_json.a
 
 # Tests
-TEST_SRC := tests/test_basic.c
-TEST_BIN := $(BUILD_DIR)/test_basic
+TEST_SRC := tests/test.c
+TEST_BIN := $(BUILD_DIR)/test
 
 # Examples
 EXAMPLES_SRC := $(wildcard examples/*.c)
@@ -39,7 +39,7 @@ $(BUILD_DIR):
 
 # Test build and run
 test: $(TEST_BIN)
-	@./$(TEST_BIN)
+	@cd $(BUILD_DIR) && ../$(BUILD_DIR)/test
 
 $(TEST_BIN): $(TEST_SRC) $(SRC) | $(BUILD_DIR)
 	@$(CC) $(CFLAGS) $^ -o $@
