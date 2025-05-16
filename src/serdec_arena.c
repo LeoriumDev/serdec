@@ -9,14 +9,14 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stddef.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "serdec_arena.h"
-#include "serdec_utils.h"
 
 struct serdec_arena {
     uint8_t* buffer;
@@ -24,7 +24,7 @@ struct serdec_arena {
     size_t   offset;
 };
 
-void serdec_arena_realloc(serdec_arena_t* arena, size_t required_size);
+bool serdec_arena_grow(serdec_arena_t* arena, size_t required_size);
 
 static inline uintptr_t serdec_align_up(uintptr_t value, size_t alignment) {
     return (value + (alignment - 1)) & ~(alignment - 1);
@@ -32,17 +32,17 @@ static inline uintptr_t serdec_align_up(uintptr_t value, size_t alignment) {
 
 serdec_arena_t* serdec_arena_create(size_t capacity) {
     if (!capacity)
-        SERDEC_FATAL("serdec_arena_create: capacity cannot be zero");
+        capacity = SERDEC_DEFAULT_CAPACITY;
 
     serdec_arena_t* arena = malloc(sizeof(serdec_arena_t));
     
     if (!arena)
-        SERDEC_FATAL("serdec_arena_create: arena struct malloc failed");
+        return NULL;
     
     arena->buffer = malloc(capacity);
     if (!arena->buffer) {
         free(arena);
-        SERDEC_FATAL("serdec_arena_create: arena buffer malloc failed");
+        return NULL;
     }
 
     arena->capacity = capacity;
@@ -51,15 +51,9 @@ serdec_arena_t* serdec_arena_create(size_t capacity) {
     return arena;
 }
 
-void* serdec_arena_alloc(serdec_arena_t* arena, size_t size, size_t alignment) {
-    if (!arena)
-        SERDEC_FATAL("serdec_arena_alloc: arena cannot be NULL");
-
-    if (!size)
-        SERDEC_FATAL("serdec_arena_alloc: cannot allocate 0 bytes");
-
-    if (!alignment || (alignment & (alignment - 1)) != 0)
-        SERDEC_FATAL("serdec_arena_alloc: alignment must be power of two");
+size_t serdec_arena_alloc_offset(serdec_arena_t* arena, size_t size, size_t alignment) {
+    if (!arena || !size || !alignment || (alignment & (alignment - 1)) != 0)
+        return SERDEC_INVALID_OFFSET;
 
     uintptr_t current = (uintptr_t) (arena->buffer + arena->offset);
     uintptr_t aligned = serdec_align_up(current, alignment);
@@ -67,44 +61,55 @@ void* serdec_arena_alloc(serdec_arena_t* arena, size_t size, size_t alignment) {
     size_t total_size = padding + size;
 
     if (arena->offset + total_size > arena->capacity) {
-        serdec_arena_realloc(arena, total_size);
+        if (!serdec_arena_grow(arena, total_size))
+            return SERDEC_INVALID_OFFSET;
+
         current = (uintptr_t) (arena->buffer + arena->offset);
         aligned = serdec_align_up(current, alignment);
         padding = aligned - current;
         total_size = padding + size;
     }
 
-    void* ptr = (void*) aligned;
+    size_t result_offset = arena->offset + padding;
     arena->offset += total_size;
-    return ptr;
+    
+    return result_offset;
 }
 
-void serdec_arena_realloc(serdec_arena_t* arena, size_t required_size) {
-    if (!arena)
-        SERDEC_FATAL("serdec_arena_realloc: arena cannot be NULL");
+void* serdec_arena_resolve(serdec_arena_t* arena, size_t offset) {
+    if (!arena || offset == SERDEC_INVALID_OFFSET || offset > arena->capacity)
+        return NULL;
 
-    size_t new_capacity = arena->capacity * 2;
-    while (arena->offset + required_size > new_capacity)
-        new_capacity *= 2;
+    return (void*) arena->buffer + offset;
+}
+
+bool serdec_arena_grow(serdec_arena_t* arena, size_t required_size) {
+    if (!arena)
+        return false;
+
+    size_t new_capacity = arena->capacity * SERDEC_ARENA_GROWTH_FACTOR;
+    if (arena->offset + required_size > new_capacity)
+        new_capacity = arena->offset + required_size;
 
     uint8_t* new_buffer = realloc(arena->buffer, new_capacity);
     if (!new_buffer)
-        SERDEC_FATAL("serdec_arena_realloc: arena realloc failed");
+        return false;
 
     arena->buffer = new_buffer;
     arena->capacity = new_capacity;
+    return true;
 }
 
 void serdec_arena_reset(serdec_arena_t* arena) {
     if (!arena)
-        SERDEC_FATAL("serdec_arena_reset: arena cannot be NULL");
+        return;
 
     arena->offset = 0;
 }
 
 void serdec_arena_destroy(serdec_arena_t* arena) {
     if (!arena)
-        SERDEC_FATAL("serdec_arena_destroy: arena cannot be NULL");
+        return;
 
     free(arena->buffer);
     free(arena);
