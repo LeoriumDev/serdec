@@ -10,5 +10,6 @@ int main(void) {
     
     FILE* file = fopen("test.json", "w");
     fprintf(file, "%s", output);
+    fclose(file);
     return EXIT_SUCCESS;
 }
