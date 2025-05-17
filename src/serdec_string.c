@@ -16,7 +16,7 @@
 #include "serdec_vector.h"
 #include "serdec_string.h"
 
-#define SERDEC_STRING_INITIAL_CAPACITY 16
+#define SERDEC_STRING_INITIAL_CAPACITY 64
 
 serdec_string_t* serdec_string_new(const char* str, serdec_arena_t* arena) {
     if (!arena)
@@ -25,16 +25,30 @@ serdec_string_t* serdec_string_new(const char* str, serdec_arena_t* arena) {
     size_t len = str ? strlen(str) : 0;
 
     size_t offset = serdec_arena_alloc_offset(arena, sizeof(serdec_string_t), 
-                                                _Alignof(serdec_string_t));
+                                             _Alignof(serdec_string_t));
+    if (offset == SERDEC_ARENA_INVALID_OFFSET)
+        return NULL;
+        
     serdec_string_t* s_str = serdec_arena_resolve(arena, offset);
+    if (!s_str)
+        return NULL;
 
-    s_str->vec = serdec_vector_new(sizeof(char), len + 1, arena);
- 
-    char* buf = (char*) s_str->vec->data;
-    if (len > 0) {
-         memcpy(buf, str, len);
+    // Calculate an appropriate initial capacity
+    size_t initial_capacity = len + 1;
+    if (initial_capacity < SERDEC_STRING_INITIAL_CAPACITY)
+        initial_capacity = SERDEC_STRING_INITIAL_CAPACITY;
+
+    s_str->vec = serdec_vector_new(sizeof(char), initial_capacity, arena);
+    if (!s_str->vec || !s_str->vec->data)  // Make sure we have valid data
+        return NULL;
+    
+    char* buf = (char*)s_str->vec->data;
+    
+    if (str && len > 0) {
+        memcpy(buf, str, len);
     }
-    buf[len] = '\0';
+    
+    buf[len] = '\0';  // Add null terminator
     s_str->vec->count = len;
 
     return s_str;

@@ -135,6 +135,8 @@ bool serdec_json_list_append(serdec_json_t* object, serdec_json_t* value);
         serdec_json_t*:       serdec_json_add_object,      \
         default:              serdec_json_add_null         \
     )(object, key, value)
+#define serdec_json_array_add(array, value) \
+    serdec_json_add(array, "", value)
 #endif
 
 /* JSON Object Stringify functions */

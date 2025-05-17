@@ -1,13 +1,13 @@
 /**
- * serdec - a c serialization and deserialization library
- * version: 1.0.0
- * copyright (c) 2025 leorium <contact@leorium.com>
+ * Serdec - A C serialization and deserialization library
+ * Version: 1.0.0
+ * Copyright (c) 2025 Leorium <contact@leorium.com>
  *
- * this library is free software; you can redistribute it and/or modify
- * it under the terms of the mit license. see license for details.
- *
- * spdx-license-identifier: mit
- */ 
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
+ * 
+ * SPDX-License-Identifier: MIT
+ */
 
 #include <assert.h>
 #include <stdint.h>
@@ -18,7 +18,7 @@
 #include "serdec_arena.h"
 #include "serdec_vector.h"
 #include "serdec_string.h"
-#include "serdec_utils.h"
+
 
 /* json field types */
 typedef enum {
@@ -61,32 +61,28 @@ static inline void serdec_add_indent(serdec_string_t* string, size_t indent_leve
 }
 
 serdec_json_t* serdec_json_new_root(void) {
-    // Create a larger initial arena
     serdec_arena_t* arena = serdec_arena_create(4096);
     if (!arena)
-        SERDEC_FATAL("serdec_json_new_root: failed to create arena");
+        return NULL;
         
     serdec_json_t* root =
-        serdec_arena_alloc(arena, sizeof(serdec_json_t), _Alignof(serdec_json_t));
+        SERDEC_ARENA_ALLOC(arena, serdec_json_t);
     if (!root)
-        SERDEC_FATAL("serdec_json_new_root: failed to allocate root node");
+        return NULL;
         
-    // Initialize fields
     memset(&root->value, 0, sizeof(root->value));
     root->type = SERDEC_JSON_OBJECT;
-    root->arena = arena;  // Set the arena
+    root->arena = arena;
     
-    // Create an empty key
     root->key = serdec_string_new("", arena);
     if (!root->key)
-        SERDEC_FATAL("serdec_json_new_root: failed to create key string");
+        return NULL;
         
-    // Create vector to store child nodes
     root->value.vector = serdec_vector_new(sizeof(serdec_json_t*), 
                                          SERDEC_INITIAL_OBJECT_CAP, 
                                          arena);
     if (!root->value.vector)
-        SERDEC_FATAL("serdec_json_new_root: failed to create vector");
+        return NULL;
         
     return root;
 }
@@ -132,9 +128,6 @@ serdec_json_t* serdec_json_new_array(serdec_json_t* root, const char* key) {
     node->value.vector = serdec_vector_new(sizeof(serdec_json_t),
                                            SERDEC_INITIAL_ARRAY_CAP,
                                            root->arena);
-    node->value.vector = serdec_vector_new(sizeof(serdec_json_t*),
-                                         SERDEC_INITIAL_ARRAY_CAP,
-                                         root->arena);
     return node;
 }
 
@@ -144,21 +137,12 @@ serdec_json_t* serdec_json_new_object(serdec_json_t* root, const char* key) {
     node->value.vector = serdec_vector_new(sizeof(serdec_json_t),
                                            SERDEC_INITIAL_OBJECT_CAP,
                                            root->arena);
-    node->value.vector = serdec_vector_new(sizeof(serdec_json_t*),
-                                         SERDEC_INITIAL_OBJECT_CAP,
-                                         root->arena);
     return node;
 }
 
 bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
-    if (!object)
-        SERDEC_FATAL("serdec_json_add_null: object cannot be null");
-
-    if (!key)
-        SERDEC_FATAL("serdec_json_add_null: key cannot be null");
-
-    if (object->type != SERDEC_JSON_OBJECT)
-        SERDEC_FATAL("serdec_json_add_null: object has a wrong type");
+    if (!object || !key || object->type != SERDEC_JSON_OBJECT)
+        return false;
 
     (void) null;
 
@@ -168,14 +152,8 @@ bool serdec_json_add_null(serdec_json_t* object, const char* key, void* null) {
 }
 
 bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
-    if (!object)
-        SERDEC_FATAL("serdec_json_add_bool: object cannot be null");
-
-    if (!key)
-        SERDEC_FATAL("serdec_json_add_bool: key cannot be null");
-
-    if (object->type != SERDEC_JSON_OBJECT)
-        SERDEC_FATAL("serdec_json_add_bool: object has a wrong type");
+    if (!object || !key || object->type != SERDEC_JSON_OBJECT)
+        return false;
 
     serdec_json_t* new_node = serdec_json_new_bool(object, key, value);
     serdec_vector_push(object->value.vector, &new_node);
@@ -184,14 +162,8 @@ bool serdec_json_add_bool(serdec_json_t* object, const char* key, bool value) {
 
 bool serdec_json_add_int(serdec_json_t* object, const char* key,
                          int64_t value) {
-    if (!object)
-        SERDEC_FATAL("serdec_json_add_int: object cannot be null");
-
-    if (!key)
-        SERDEC_FATAL("serdec_json_add_int: key cannot be null");
-
-    if (object->type != SERDEC_JSON_OBJECT)
-        SERDEC_FATAL("serdec_json_add_int: object has a wrong type");
+    if (!object || !key || object->type != SERDEC_JSON_OBJECT)
+        return false;
 
     serdec_json_t* new_node = serdec_json_new_int(object, key, value);
     serdec_vector_push(object->value.vector, &new_node);
@@ -200,14 +172,8 @@ bool serdec_json_add_int(serdec_json_t* object, const char* key,
 
 bool serdec_json_add_float(serdec_json_t* object, const char* key,
                            double value) {
-    if (!object)
-        SERDEC_FATAL("serdec_json_add_float: object cannot be null");
-
-    if (!key)
-        SERDEC_FATAL("serdec_json_add_float: key cannot be null");
-
-    if (object->type != SERDEC_JSON_OBJECT)
-        SERDEC_FATAL("serdec_json_add_float: object has a wrong type");
+    if (!object || !key || object->type != SERDEC_JSON_OBJECT)
+        return false;
 
     serdec_json_t* new_node = serdec_json_new_float(object, key, value);
     serdec_vector_push(object->value.vector, &new_node);
@@ -216,14 +182,8 @@ bool serdec_json_add_float(serdec_json_t* object, const char* key,
 
 bool serdec_json_add_string(serdec_json_t* object, const char* key,
                             const char* value) {
-    if (!object)
-        SERDEC_FATAL("serdec_json_add_string: object cannot be null");
-
-    if (!key)
-        SERDEC_FATAL("serdec_json_add_string: key cannot be null");
-
-    if (object->type != SERDEC_JSON_OBJECT)
-        SERDEC_FATAL("serdec_json_add_string: object has a wrong type");
+    if (!object || !key || object->type != SERDEC_JSON_OBJECT)
+        return false;
 
     serdec_json_t* new_node = serdec_json_new_string(object, key, value);
     serdec_vector_push(object->value.vector, &new_node);
@@ -232,31 +192,19 @@ bool serdec_json_add_string(serdec_json_t* object, const char* key,
 
 bool serdec_json_add_object(serdec_json_t* object, const char* key,
                             serdec_json_t* value) {
-    if (!object)
-        SERDEC_FATAL("serdec_json_add_object: object cannot be null");
-
-    if (!key)
-        SERDEC_FATAL("serdec_json_add_object: key cannot be null");
-
-    if (object->type != SERDEC_JSON_OBJECT)
-        SERDEC_FATAL("serdec_json_add_object: object has a wrong type");
-
-    serdec_vector_push(object->value.vector, value);
+    if (!object || !key || object->type != SERDEC_JSON_OBJECT)
+        return false;
+                                
+    serdec_vector_push(object->value.vector, &value);
     return true;
 }
 
 bool serdec_json_add_array(serdec_json_t* object, const char* key,
                            serdec_json_t* value) {
-   if (!object)
-        SERDEC_FATAL("serdec_json_add_bool: object cannot be null");
+    if (!object || !key || object->type != SERDEC_JSON_OBJECT)
+        return false;
 
-    if (!key)
-        SERDEC_FATAL("serdec_json_add_bool: key cannot be null");
-
-    if (object->type != SERDEC_JSON_OBJECT)
-        SERDEC_FATAL("serdec_json_add_bool: object has a wrong type");
-                            
-    serdec_vector_push(object->value.vector, value);
+    serdec_vector_push(object->value.vector, &value);
     return true;
 }
 
@@ -292,7 +240,7 @@ char* serdec_json_stringify_internal(serdec_json_t* object, bool pretty_print) {
                 data, indent_level + 1, pretty_print));
             break;
         default:
-            serdec_string_push(str, "\"\"");
+            serdec_string_push(str, "(ERROR)");
             break;
         }
         if (pretty_print)
@@ -328,7 +276,7 @@ char* serdec_json_stringify_primitive(serdec_json_t* object, size_t indent_level
         serdec_add_indent(str, indent_level);
 
     if (object->key)
-        serdec_string_printf(str, "\"%s\":%s", object->key, pretty_print ? " " : "");
+        serdec_string_printf(str, "\"%s\":%s", (char*)object->key->vec->data, pretty_print ? " " : "");
 
     switch (object->type) {
     case SERDEC_JSON_NULL:
@@ -344,10 +292,10 @@ char* serdec_json_stringify_primitive(serdec_json_t* object, size_t indent_level
         serdec_string_printf(str, "%lf", object->value.f64);
         break;
     case SERDEC_JSON_STRING:
-        serdec_string_printf(str, "\"%s\"", object->value.string);
+        serdec_string_printf(str, "\"%s\"", (char*)object->value.string->vec->data);
         break;
     default:
-        serdec_string_push(str, "\"\"");
+        serdec_string_push(str, "(ERROR)");
         break;
     }
     char* output = serdec_string_take(str);
@@ -364,7 +312,7 @@ char* serdec_json_stringify_array(serdec_json_t* object, size_t indent_level, bo
         serdec_add_indent(str, indent_level);
 
     if (object->key)
-        serdec_string_printf(str, "\"%s\":%s", object->key, pretty_print ? " " : "");
+        serdec_string_printf(str, "\"%s\":%s", (char*)object->key->vec->data, pretty_print ? " " : "");
     
     serdec_string_push(str, pretty_print ? "[\n" : "[");
 
@@ -390,8 +338,10 @@ char* serdec_json_stringify_array(serdec_json_t* object, size_t indent_level, bo
         else
             serdec_string_push(str, (i < arr->count - 1) ? "," : "");
     }
+    
     if (pretty_print)
         serdec_add_indent(str, indent_level);
+        
     serdec_string_push(str, "]");
     char* output = serdec_string_take(str);
     return output;
@@ -405,31 +355,29 @@ char* serdec_json_stringify_object(serdec_json_t* object, size_t indent_level, b
     if (!str)
         return NULL;
 
-    /* opening brace & optional key */
     if (pretty_print)
         serdec_add_indent(str, indent_level);
 
     if (object->key)
-        serdec_string_printf(str, "\"%s\":%s", object->key, pretty_print ? " " : "");
+        serdec_string_printf(str, "\"%s\":%s", (char*)object->key->vec->data, pretty_print ? " " : "");
 
     serdec_string_push(str, pretty_print ? "{\n" : "{");
 
-    /* iterate over children */
     serdec_vector_t* arr = object->value.vector;
     for (size_t i = 0; i < arr->count; ++i) {
         serdec_json_t* element = ((serdec_json_t**)arr->data)[i];
         switch (element->type) {
         case SERDEC_JSON_ARRAY:
             serdec_string_push(str, serdec_json_stringify_array(
-                element, indent_level + 1, pretty_print));
+                element, indent_level+1, pretty_print));
             break;
         case SERDEC_JSON_OBJECT:
             serdec_string_push(str, serdec_json_stringify_object(
-                element, indent_level + 1, pretty_print));
+                element, indent_level+1, pretty_print));
             break;
         default:
             serdec_string_push(str, serdec_json_stringify_primitive(
-                element, indent_level + 1, pretty_print));
+                element, indent_level+1, pretty_print));
             break;
         }
         if (pretty_print)
@@ -438,7 +386,6 @@ char* serdec_json_stringify_object(serdec_json_t* object, size_t indent_level, b
             serdec_string_push(str, (i < arr->count - 1) ? "," : "");
     }
 
-    /* closing brace */
     if (pretty_print)
         serdec_add_indent(str, indent_level);
     serdec_string_push(str, "}");

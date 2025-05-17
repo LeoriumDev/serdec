@@ -53,7 +53,7 @@ serdec_arena_t* serdec_arena_create(size_t capacity) {
 
 size_t serdec_arena_alloc_offset(serdec_arena_t* arena, size_t size, size_t alignment) {
     if (!arena || !size || !alignment || (alignment & (alignment - 1)) != 0)
-        return SERDEC_INVALID_OFFSET;
+        return SERDEC_ARENA_INVALID_OFFSET;
 
     uintptr_t current = (uintptr_t) (arena->buffer + arena->offset);
     uintptr_t aligned = serdec_align_up(current, alignment);
@@ -62,7 +62,7 @@ size_t serdec_arena_alloc_offset(serdec_arena_t* arena, size_t size, size_t alig
 
     if (arena->offset + total_size > arena->capacity) {
         if (!serdec_arena_grow(arena, total_size))
-            return SERDEC_INVALID_OFFSET;
+            return SERDEC_ARENA_INVALID_OFFSET;
 
         current = (uintptr_t) (arena->buffer + arena->offset);
         aligned = serdec_align_up(current, alignment);
@@ -77,10 +77,10 @@ size_t serdec_arena_alloc_offset(serdec_arena_t* arena, size_t size, size_t alig
 }
 
 void* serdec_arena_resolve(serdec_arena_t* arena, size_t offset) {
-    if (!arena || offset == SERDEC_INVALID_OFFSET || offset > arena->capacity)
+    if (!arena || offset == SERDEC_ARENA_INVALID_OFFSET || offset > arena->capacity)
         return NULL;
 
-    return (void*) arena->buffer + offset;
+    return (void*) (arena->buffer + offset);
 }
 
 bool serdec_arena_grow(serdec_arena_t* arena, size_t required_size) {

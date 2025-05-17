@@ -25,13 +25,19 @@ serdec_vector_t* serdec_vector_new(size_t elem_size, size_t initial_capacity,
     size_t vec_offset = serdec_arena_alloc_offset(arena, sizeof(serdec_vector_t), 
                                     alignof(serdec_vector_t));
     serdec_vector_t* vec = serdec_arena_resolve(arena, vec_offset);
+    if (!vec) return NULL;
 
     vec->arena     = arena;
     vec->count     = 0;
-    vec->capacity  = initial_capacity;
+    vec->capacity  = 0;
     vec->elem_size = elem_size;
-    vec->data = NULL;
+    vec->data      = NULL;
+    
     serdec_vector_reserve(vec, initial_capacity);
+    
+    if (!vec->data)
+        return NULL;
+    
     return vec;
 }
 
@@ -45,10 +51,17 @@ void serdec_vector_reserve(serdec_vector_t* vec, size_t min_capacity) {
 
     size_t offset = serdec_arena_alloc_offset(vec->arena,
                     new_cap * vec->elem_size, alignof(max_align_t));
+    if (offset == SERDEC_ARENA_INVALID_OFFSET)
+        return;
+        
     void* new_data = serdec_arena_resolve(vec->arena, offset);
+    if (!new_data)
+        return;
+        
     if (vec->data != NULL && vec->count > 0) {
         memcpy(new_data, vec->data, vec->count * vec->elem_size);
     }
+    
     vec->data = new_data;
     vec->capacity = new_cap;
 }

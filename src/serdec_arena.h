@@ -15,7 +15,7 @@
 #include <stddef.h>
 
 #define SERDEC_DEFAULT_CAPACITY 1024
-#define SERDEC_INVALID_OFFSET ((size_t) - 1)
+#define SERDEC_ARENA_INVALID_OFFSET ((size_t) - 1)
 #define SERDEC_ARENA_GROWTH_FACTOR 2
 
 #if __STDC_VERSION__ >= 202311L
@@ -34,7 +34,7 @@
 #endif
 
 #define SERDEC_ARENA_ALLOC(arena, type) \
-    serdec_arena_alloc(arena, sizeof(type), SERDEC_ALIGNOF(type))
+    serdec_arena_resolve(arena, serdec_arena_alloc_offset(arena, sizeof(type), SERDEC_ALIGNOF(type)))
 
 typedef struct serdec_arena serdec_arena_t;
 
