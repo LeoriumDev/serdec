@@ -11,28 +11,20 @@
 
 #include <string.h>
 
-#if __STDC_VERSION__ < 202311L
-#include <stdalign.h>
-#endif
-
 #include "serdec_vector.h"
-#include "serdec_utils.h"
-
-#define SERDEC_VECTOR_GROWTH_FACTOR 2
+#include "serdec_arena.h"
 
 serdec_vector_t* serdec_vector_new(size_t elem_size, size_t initial_capacity,
                                    serdec_arena_t* arena) {
-    if (!elem_size)
-        SERDEC_FATAL("serdec_vector_new: elem_size cannot be zero");
+    if (!elem_size || !arena)
+        return NULL;
 
     if (!initial_capacity)
-        SERDEC_FATAL("serdec_vector_new: initial_capacity cannot be zero");
+        initial_capacity = SERDEC_VECTOR_DEFAULT_CAPACITY;
     
-    if (!arena)
-        SERDEC_FATAL("serdec_vector_new: arena cannot be NULL");
-
-    serdec_vector_t* vec = serdec_arena_alloc(arena, sizeof(*vec), 
+    size_t vec_offset = serdec_arena_alloc_offset(arena, sizeof(serdec_vector_t), 
                                     alignof(serdec_vector_t));
+    serdec_vector_t* vec = serdec_arena_resolve(arena, vec_offset);
 
     vec->arena     = arena;
     vec->count     = 0;
@@ -44,22 +36,16 @@ serdec_vector_t* serdec_vector_new(size_t elem_size, size_t initial_capacity,
 }
 
 void serdec_vector_reserve(serdec_vector_t* vec, size_t min_capacity) {
-    if (!vec)
-        SERDEC_FATAL("serdec_vector_reserve: vector cannot be NULL");
-
-    if (!min_capacity)
-        SERDEC_FATAL("serdec_vector_reserve: minimum capacity cannot be zero");
-
-    if (vec->data != NULL && vec->capacity >= min_capacity)
-         return;
+    if (!vec || !min_capacity || vec->capacity >= min_capacity)
+        return;
     
     size_t new_cap = vec->capacity * SERDEC_VECTOR_GROWTH_FACTOR;
     if (new_cap < min_capacity)
         new_cap = min_capacity;
 
-    void* new_data = serdec_arena_alloc(vec->arena,
+    size_t offset = serdec_arena_alloc_offset(vec->arena,
                     new_cap * vec->elem_size, alignof(max_align_t));
-
+    void* new_data = serdec_arena_resolve(vec->arena, offset);
     if (vec->data != NULL && vec->count > 0) {
         memcpy(new_data, vec->data, vec->count * vec->elem_size);
     }
@@ -68,10 +54,8 @@ void serdec_vector_reserve(serdec_vector_t* vec, size_t min_capacity) {
 }
 
 void serdec_vector_push(serdec_vector_t* vec, const void *elem) {
-    if (!vec)
-        SERDEC_FATAL("serdec_vector_push: vector cannot be NULL");
-    if (!elem)
-        SERDEC_FATAL("serdec_vector_push: element is NULL");
+    if (!vec || !elem)
+        return;
 
     if (vec->count == vec->capacity)
         serdec_vector_reserve(vec, vec->count + 1);
@@ -82,10 +66,9 @@ void serdec_vector_push(serdec_vector_t* vec, const void *elem) {
 }
 
 void serdec_vector_pop(serdec_vector_t* vec, void *out) {
-    if (!vec)
-        SERDEC_FATAL("serdec_vector_push: vector cannot be NULL");
-    if (vec->count == 0)
-        SERDEC_FATAL("serdec_vector_pop: vector is empty");
+    if (!vec || vec->count == 0)
+        return;
+
     vec->count--;
     if (out)
         memcpy(out, ((char*) vec->data) + (vec->count * vec->elem_size),

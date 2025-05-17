@@ -9,14 +9,13 @@
  * SPDX-License-Identifier: MIT
  */
 
-#pragma once
-
-#if __STDC_VERSION__ < 202311L
-#include <stdbool.h>
-#endif
+#ifndef SERDEC_VECTOR_H
+#define SERDEC_VECTOR_H
 
 #include "serdec_arena.h"
 
+#define SERDEC_VECTOR_GROWTH_FACTOR 2
+#define SERDEC_VECTOR_DEFAULT_CAPACITY 16
 
 typedef struct serdec_vector {
     void*            data;
@@ -38,3 +37,5 @@ void              serdec_vector_push     (serdec_vector_t*  vec,
 
 void              serdec_vector_pop      (serdec_vector_t*  vec,
                                           void*             out);
+
+#endif /* SERDEC_VECTOR_H */
