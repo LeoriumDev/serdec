@@ -9,23 +9,25 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "serdec_arena.h"
-#include "serdec_utils.h"
-#include "serdec_vector.h"
-#include <stddef.h>
+#include <stdio.h>
 #include <string.h>
+
+#include "serdec_arena.h"
+#include "serdec_vector.h"
 #include "serdec_string.h"
 
 #define SERDEC_STRING_INITIAL_CAPACITY 16
 
 serdec_string_t* serdec_string_new(const char* str, serdec_arena_t* arena) {
     if (!arena)
-        SERDEC_FATAL("serdec_string_new: arena is NULL");
+        return NULL;
 
     size_t len = str ? strlen(str) : 0;
 
-    serdec_string_t* s_str = serdec_arena_alloc(arena, sizeof(serdec_string_t), 
+    size_t offset = serdec_arena_alloc_offset(arena, sizeof(serdec_string_t), 
                                                 _Alignof(serdec_string_t));
+    serdec_string_t* s_str = serdec_arena_resolve(arena, offset);
+
     s_str->vec = serdec_vector_new(sizeof(char), len + 1, arena);
  
     char* buf = (char*) s_str->vec->data;
@@ -43,7 +45,19 @@ void serdec_string_reserve(serdec_string_t* s_str, size_t len) {
 }
 
 void serdec_string_push(serdec_string_t* s_str, const char* str) {
-    serdec_vector_push(s_str->vec, str);
+    if (!str)
+        return;
+    
+    size_t len = strlen(str);
+    if (len == 0)
+        return;
+    
+    size_t old_count = s_str->vec->count;
+    serdec_vector_reserve(s_str->vec, old_count + len + 1);
+    
+    memcpy((char*) s_str->vec->data + old_count, str, len);
+    ((char*)s_str->vec->data)[old_count + len] = '\0';
+    s_str->vec->count += len;
 }
 
 void serdec_string_vprintf(serdec_string_t* s_str, const char* fmt, va_list args) {
@@ -53,7 +67,7 @@ void serdec_string_vprintf(serdec_string_t* s_str, const char* fmt, va_list args
     va_end(args);
     if (needed < 0) {
         va_end(args_copy);
-        SERDEC_FATAL("serdec_string_vprintf: vsnprintf failed");
+        return;
     }
 
     size_t start = s_str->vec->count;
@@ -64,7 +78,7 @@ void serdec_string_vprintf(serdec_string_t* s_str, const char* fmt, va_list args
     va_end(args_copy);
 
     if (written < 0)
-        SERDEC_FATAL("serdec_string_vprintf: vsnprintf write failed");
+        return;
 
     s_str->vec->count = start + (size_t) written;
 }
@@ -82,7 +96,6 @@ size_t serdec_string_length(const serdec_string_t* s_str) {
 
 void serdec_string_clear(serdec_string_t* s_str) {
     s_str->vec->count = 0;
-    s_str->vec->data = NULL;
 }
 
 char *serdec_string_take(serdec_string_t *s_str) {
@@ -91,7 +104,8 @@ char *serdec_string_take(serdec_string_t *s_str) {
     char* buf = (char*) s_str->vec->data;
     buf[len] = '\0';
     char *out = buf;
-    buf = NULL;
-    s_str->vec->count = s_str->vec->capacity = 0;
+    s_str->vec->data = NULL;
+    s_str->vec->count = 0;
+    s_str->vec->capacity = 0;
     return out;
 }

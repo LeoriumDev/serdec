@@ -9,7 +9,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#pragma once
+#ifndef SERDEC_STRING_H
+#define SERDEC_STRING_H
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -44,3 +45,5 @@ size_t            serdec_string_length  (const serdec_string_t *s);
 void              serdec_string_clear   (serdec_string_t *s);
 
 char*             serdec_string_take    (serdec_string_t *s);
+
+#endif /* SERDEC_STRING_H */
