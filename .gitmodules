@@ -1,3 +1,6 @@
 [submodule "tests/third_party/JSONTestSuite"]
 	path = tests/third_party/JSONTestSuite
 	url = https://github.com/nst/JSONTestSuite.git
+[submodule "tests/third_party/JSON-c"]
+	path = tests/third_party/JSON-c
+	url = https://github.com/douglascrockford/JSON-c
