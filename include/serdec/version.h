@@ -1,0 +1,7 @@
+#pragma once
+
+#define SERDEC_VERSION_MAJOR 0
+#define SERDEC_VERSION_MINOR 0
+#define SERDEC_VERSION_PATCH 1
+
+#define SERDEC_VERSION_STRING "0.0.1"
