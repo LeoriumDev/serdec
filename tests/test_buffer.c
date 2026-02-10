@@ -73,6 +73,34 @@ TEST(buffer_empty_input) {
     serdec_buffer_release(buf);
 }
 
+TEST(buffer_null_string) {
+    SerdecBuffer* buf = serdec_buffer_from_string(NULL, 10);
+    assert(buf == NULL);
+}
+
+TEST(buffer_large_input) {
+    char large[1000];
+    memset(large, 'x', sizeof(large));
+
+    SerdecBuffer* buf = serdec_buffer_from_string(large, sizeof(large));
+    assert(buf != NULL);
+    assert(serdec_buffer_size(buf) == 1000);
+    assert(serdec_buffer_capacity(buf) >= 1000);
+
+    serdec_buffer_release(buf);
+}
+
+TEST(buffer_binary_data) {
+    const char data[] = {'{', '\0', '\0', '}'};
+    SerdecBuffer* buf = serdec_buffer_from_string(data, 4);
+
+    assert(buf != NULL);
+    assert(serdec_buffer_size(buf) == 4);
+    assert(memcmp(serdec_buffer_data(buf), data, 4) == 0);
+
+    serdec_buffer_release(buf);
+}
+
 int test_buffer(void) {
     printf("  Buffer tests:\n");
 
@@ -82,6 +110,9 @@ int test_buffer(void) {
     RUN(buffer_refcount);
     RUN(buffer_null_safety);
     RUN(buffer_empty_input);
+    RUN(buffer_null_string);
+    RUN(buffer_large_input);
+    RUN(buffer_binary_data);
 
     printf("\n  All buffer tests passed!\n");
 
