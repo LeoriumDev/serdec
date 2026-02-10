@@ -2,8 +2,8 @@
 #include <serdec/serdec.h>
 
 TEST(buffer_create_from_string) {
-    const char *json = "{\"test\": 123}";
-    SerdecBuffer *buf = serdec_buffer_from_string(json, strlen(json));
+    const char* json = "{\"test\": 123}";
+    SerdecBuffer* buf = serdec_buffer_from_string(json, strlen(json));
 
     assert(buf != NULL);
     assert(serdec_buffer_size(buf) == strlen(json));
@@ -13,10 +13,10 @@ TEST(buffer_create_from_string) {
 }
 
 TEST(buffer_padding_is_zero) {
-    const char *json = "test";  // 4 bytes
-    SerdecBuffer *buf = serdec_buffer_from_string(json, 4);
+    const char* json = "test";  // 4 bytes
+    SerdecBuffer* buf = serdec_buffer_from_string(json, 4);
 
-    const char *data = serdec_buffer_data(buf);
+    const char* data = serdec_buffer_data(buf);
     size_t size = serdec_buffer_size(buf);
     size_t cap = serdec_buffer_capacity(buf);
 
@@ -29,20 +29,20 @@ TEST(buffer_padding_is_zero) {
 }
 
 TEST(buffer_alignment) {
-    SerdecBuffer *buf = serdec_buffer_from_string("x", 1);
+    SerdecBuffer* buf = serdec_buffer_from_string("x", 1);
 
-    uintptr_t addr = (uintptr_t)serdec_buffer_data(buf);
+    uintptr_t addr = (uintptr_t) serdec_buffer_data(buf);
     assert((addr % 64) == 0);  // 64-byte aligned
 
     serdec_buffer_release(buf);
 }
 
 TEST(buffer_refcount) {
-    SerdecBuffer *buf = serdec_buffer_from_string("test", 4);
+    SerdecBuffer* buf = serdec_buffer_from_string("test", 4);
 
     // Retain twice
-    SerdecBuffer *ref1 = serdec_buffer_retain(buf);
-    SerdecBuffer *ref2 = serdec_buffer_retain(buf);
+    SerdecBuffer* ref1 = serdec_buffer_retain(buf);
+    SerdecBuffer* ref2 = serdec_buffer_retain(buf);
 
     assert(ref1 == buf);
     assert(ref2 == buf);
@@ -60,11 +60,11 @@ TEST(buffer_null_safety) {
     serdec_buffer_release(NULL);
     assert(serdec_buffer_retain(NULL) == NULL);
     assert(serdec_buffer_data(NULL) == NULL);
-    assert(serdec_buffer_size(NULL) == 0);
+    assert(serdec_buffer_size(NULL) == SIZE_MAX);
 }
 
 TEST(buffer_empty_input) {
-    SerdecBuffer *buf = serdec_buffer_from_string("", 0);
+    SerdecBuffer* buf = serdec_buffer_from_string("", 0);
 
     assert(buf != NULL);
     assert(serdec_buffer_size(buf) == 0);

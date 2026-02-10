@@ -28,6 +28,9 @@ typedef enum SerdecError {
     // I/O errors (500-599)
     SERDEC_ERR_IO = 500,
     SERDEC_ERR_FILE_NOT_FOUND,
+
+    // Corrupted struct (600)
+    SERDEC_ERR_INVALID_HANDLE = 600,
 } SerdecError;
 
 typedef struct SerdecErrorInfo {
