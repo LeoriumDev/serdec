@@ -1,2 +1,2 @@
 # serdec
-A lightweight C serialization and deserialization library for JSON.
+A lightweight serialization and deserialization C library for JSON.
