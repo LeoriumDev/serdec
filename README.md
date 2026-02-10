@@ -30,3 +30,20 @@ Development build with sanitizers:
 cmake -B build -DSERDEC_ENABLE_SANITIZERS=ON
 cmake --build build
 ```
+
+## Testing
+
+```bash
+# Run all tests via CTest
+ctest --test-dir build
+
+# Run directly
+./build/serdec_tests
+
+# Run specific suite
+./build/serdec_tests buffer
+ctest --test-dir build -R buffer
+
+# Verbose output
+ctest --test-dir build --output-on-failure
+```
