@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 4.2.3)
 project(serdec VERSION 0.0.1 LANGUAGES C)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 add_library(serdec
   src/serdec.c
   src/serdec_buf.c
