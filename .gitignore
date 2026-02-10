@@ -23,4 +23,8 @@ compile_commands.json
 # editors
 .vscode/
 .idea/
+.cache/
 *.swp
+
+# notes
+notes/
