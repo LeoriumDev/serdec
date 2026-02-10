@@ -41,6 +41,7 @@ SerdecBuffer* serdec_buffer_from_stream(FILE* fp, size_t max_size) {
     return NULL;
 }
 
+// TODO: Make reference counting thread-safe
 SerdecBuffer* serdec_buffer_retain(SerdecBuffer* buf) {
     if (!buf || buf->magic != SERDEC_MAGIC_BUFFER) return NULL;
     buf->ref_count++;
