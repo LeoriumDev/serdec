@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 // Create buffer
-SerdecBuffer* serdec_buffer_from_string(const char* json, size_t len);
+SerdecBuffer* serdec_buffer_from_string(const char* str, size_t len);
 SerdecBuffer* serdec_buffer_from_file(const char* path, size_t max_size);
 SerdecBuffer* serdec_buffer_from_stream(FILE* fp, size_t max_size);
 
