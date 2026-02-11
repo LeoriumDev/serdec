@@ -1,5 +1,6 @@
 #pragma once
 
+#include "serdec/types.h"
 #include <serdec/serdec.h>
 
 #define SERDEC_MAGIC_BUFFER 0x5EDEC00B
@@ -84,7 +85,7 @@ typedef struct SerdecToken {
 } SerdecToken;
 
 typedef struct SerdecLexer {
-    const char *input;        // Start of buffer
+    const char *start;        // Start of buffer
     const char *current;      // Current position
     const char *end;          // End of logical input
 
@@ -93,6 +94,8 @@ typedef struct SerdecLexer {
 
     SerdecToken peeked;       // For peek() implementation
     bool has_peeked;
+
+    SerdecBuffer* buffer;     // Keep track of which buffer to release
 
     SerdecErrorInfo error;
 } SerdecLexer;
