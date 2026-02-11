@@ -5,9 +5,9 @@ TEST(buffer_create_from_string) {
     const char* json = "{\"test\": 123}";
     SerdecBuffer* buf = serdec_buffer_from_string(json, strlen(json));
 
-    assert(buf != NULL);
-    assert(serdec_buffer_size(buf) == strlen(json));
-    assert(memcmp(serdec_buffer_data(buf), json, strlen(json)) == 0);
+    ASSERT_NOT_NULL(buf);
+    ASSERT_EQ(serdec_buffer_size(buf), strlen(json));
+    ASSERT(memcmp(serdec_buffer_data(buf), json, strlen(json)) == 0);
 
     serdec_buffer_release(buf);
 }
@@ -20,9 +20,8 @@ TEST(buffer_padding_is_zero) {
     size_t size = serdec_buffer_size(buf);
     size_t cap = serdec_buffer_capacity(buf);
 
-    // Check padding bytes are zero
     for (size_t i = size; i < cap && i < size + 64; i++) {
-        assert(data[i] == 0);
+        ASSERT_EQ(data[i], 0);
     }
 
     serdec_buffer_release(buf);
@@ -32,7 +31,7 @@ TEST(buffer_alignment) {
     SerdecBuffer* buf = serdec_buffer_from_string("x", 1);
 
     uintptr_t addr = (uintptr_t) serdec_buffer_data(buf);
-    assert((addr % 64) == 0);  // 64-byte aligned
+    ASSERT((addr % 64) == 0);
 
     serdec_buffer_release(buf);
 }
@@ -40,42 +39,37 @@ TEST(buffer_alignment) {
 TEST(buffer_refcount) {
     SerdecBuffer* buf = serdec_buffer_from_string("test", 4);
 
-    // Retain twice
     SerdecBuffer* ref1 = serdec_buffer_retain(buf);
     SerdecBuffer* ref2 = serdec_buffer_retain(buf);
 
-    assert(ref1 == buf);
-    assert(ref2 == buf);
+    ASSERT(ref1 == buf);
+    ASSERT(ref2 == buf);
 
-    // Release all three references
     serdec_buffer_release(buf);
     serdec_buffer_release(ref1);
     serdec_buffer_release(ref2);
-
-    // If we get here without ASan complaining, refcounting works
 }
 
 TEST(buffer_null_safety) {
-    // These should not crash
     serdec_buffer_release(NULL);
-    assert(serdec_buffer_retain(NULL) == NULL);
-    assert(serdec_buffer_data(NULL) == NULL);
-    assert(serdec_buffer_size(NULL) == SIZE_MAX);
+    ASSERT_NULL(serdec_buffer_retain(NULL));
+    ASSERT_NULL(serdec_buffer_data(NULL));
+    ASSERT_EQ(serdec_buffer_size(NULL), SIZE_MAX);
 }
 
 TEST(buffer_empty_input) {
     SerdecBuffer* buf = serdec_buffer_from_string("", 0);
 
-    assert(buf != NULL);
-    assert(serdec_buffer_size(buf) == 0);
-    assert(serdec_buffer_capacity(buf) >= 64);  // Still has padding
+    ASSERT_NOT_NULL(buf);
+    ASSERT_EQ(serdec_buffer_size(buf), 0);
+    ASSERT(serdec_buffer_capacity(buf) >= 64);
 
     serdec_buffer_release(buf);
 }
 
 TEST(buffer_null_string) {
     SerdecBuffer* buf = serdec_buffer_from_string(NULL, 10);
-    assert(buf == NULL);
+    ASSERT_NULL(buf);
 }
 
 TEST(buffer_large_input) {
@@ -83,9 +77,9 @@ TEST(buffer_large_input) {
     memset(large, 'x', sizeof(large));
 
     SerdecBuffer* buf = serdec_buffer_from_string(large, sizeof(large));
-    assert(buf != NULL);
-    assert(serdec_buffer_size(buf) == 1000);
-    assert(serdec_buffer_capacity(buf) >= 1000);
+    ASSERT_NOT_NULL(buf);
+    ASSERT_EQ(serdec_buffer_size(buf), 1000);
+    ASSERT(serdec_buffer_capacity(buf) >= 1000);
 
     serdec_buffer_release(buf);
 }
@@ -94,9 +88,9 @@ TEST(buffer_binary_data) {
     const char data[] = {'{', '\0', '\0', '}'};
     SerdecBuffer* buf = serdec_buffer_from_string(data, 4);
 
-    assert(buf != NULL);
-    assert(serdec_buffer_size(buf) == 4);
-    assert(memcmp(serdec_buffer_data(buf), data, 4) == 0);
+    ASSERT_NOT_NULL(buf);
+    ASSERT_EQ(serdec_buffer_size(buf), 4);
+    ASSERT(memcmp(serdec_buffer_data(buf), data, 4) == 0);
 
     serdec_buffer_release(buf);
 }
@@ -114,7 +108,5 @@ int test_buffer(void) {
     RUN(buffer_large_input);
     RUN(buffer_binary_data);
 
-    printf("\n  All buffer tests passed!\n");
-
-    return 0;
+    TEST_SUMMARY();
 }
