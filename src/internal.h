@@ -1,6 +1,7 @@
 #pragma once
 
 #include <serdec/serdec.h>
+
 #define SERDEC_MAGIC_BUFFER 0x5EDEC00B
 #define SERDEC_MAGIC_ARENA  0x5EDEC00A
 #define SERDEC_MAGIC_FREED  0xDEADBEEF
@@ -43,3 +44,62 @@ struct SerdecArena {
     size_t total_allocated;   // For limit checking
     SerdecArenaConfig config;
 };
+
+typedef enum SerdecTokenType {
+    SERDEC_TOKEN_LBRACE,      // {
+    SERDEC_TOKEN_RBRACE,      // }
+    SERDEC_TOKEN_LBRACKET,    // [
+    SERDEC_TOKEN_RBRACKET,    // ]
+    SERDEC_TOKEN_COLON,       // :
+    SERDEC_TOKEN_COMMA,       // ,
+    SERDEC_TOKEN_STRING,      // "..."
+    SERDEC_TOKEN_NUMBER,      // 123, -45.6, 1.2e-3
+    SERDEC_TOKEN_TRUE,        // true
+    SERDEC_TOKEN_FALSE,       // false
+    SERDEC_TOKEN_NULL,        // null
+    SERDEC_TOKEN_EOF,         // End of input
+    SERDEC_TOKEN_ERROR        // Lexer error
+} SerdecTokenType;
+
+typedef struct SerdecToken {
+    SerdecTokenType type;
+    const char *start;        // Points into original buffer
+    size_t length;            // Length of token text
+
+    union {
+        struct {              // For TOKEN_NUMBER
+            bool is_integer;
+            bool is_negative;
+            union {
+                int64_t i64;
+                uint64_t u64;
+                double f64;
+            } value;
+        } number;
+
+        struct {              // For TOKEN_STRING
+            bool has_escapes; // Needs unescaping?
+        } string;
+    };
+} SerdecToken;
+
+typedef struct SerdecLexer {
+    const char *input;        // Start of buffer
+    const char *current;      // Current position
+    const char *end;          // End of logical input
+
+    size_t line;              // Current line (1-indexed)
+    size_t column;            // Current column (1-indexed)
+
+    SerdecToken peeked;       // For peek() implementation
+    bool has_peeked;
+
+    SerdecErrorInfo error;
+} SerdecLexer;
+
+// Lexer API
+SerdecLexer* serdec_lexer_create(SerdecBuffer* buf);
+void serdec_lexer_destroy(SerdecLexer* lexer);
+SerdecToken serdec_lexer_next(SerdecLexer* lexer);
+SerdecToken serdec_lexer_peek(SerdecLexer* lexer);
+const SerdecErrorInfo* serdec_lexer_get_error(const SerdecLexer* lexer);
