@@ -26,6 +26,7 @@ add_library(serdec STATIC
   src/core/arena.c
   src/core/buffer.c
   src/core/error.c
+  src/core/lexer.c
 )
 
 target_include_directories(serdec PUBLIC include)
