@@ -16,7 +16,7 @@ void serdec_arena_destroy(SerdecArena* arena);
 
 // Allocation
 void* serdec_arena_alloc(SerdecArena* arena, size_t size);
-void* serdec_arena_alloc_aligned(SerdecArena* arena, size_t size, size_t align);
+void* serdec_arena_alloc_aligned(SerdecArena* arena, size_t size, size_t align); // align must be power of 2
 char* serdec_arena_strdup(SerdecArena* arena, const char* str, size_t len);
 
 // Management
