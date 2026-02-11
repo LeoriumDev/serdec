@@ -35,11 +35,15 @@ SerdecBuffer* serdec_buffer_from_string(const char* str, size_t len) {
 
 // TODO: Implement serdec_buffer_from_file
 SerdecBuffer* serdec_buffer_from_file(const char* path, size_t max_size) {
+    (void) path;
+    (void) max_size;
     return NULL;
 }
 
 // TODO: Implement serdec_buffer_from_stream
 SerdecBuffer* serdec_buffer_from_stream(FILE* fp, size_t max_size) {
+    (void) fp;
+    (void) max_size;
     return NULL;
 }
 
