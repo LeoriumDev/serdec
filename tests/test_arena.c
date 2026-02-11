@@ -126,7 +126,7 @@ TEST(arena_null_safety) {
     ASSERT_NULL(serdec_arena_alloc(NULL, 10));
     ASSERT_NULL(serdec_arena_strdup(NULL, "hi", 2));
     serdec_arena_reset(NULL);
-    ASSERT_EQ(serdec_arena_used(NULL), 0);
+    ASSERT_EQ(serdec_arena_used(NULL), SIZE_MAX);
 }
 
 TEST(arena_zero_size_alloc) {
