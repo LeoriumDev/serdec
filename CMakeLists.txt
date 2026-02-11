@@ -5,8 +5,7 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_compile_options(-Wall -Wextra)
-# add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 option(SERDEC_ENABLE_ASAN "Enable AddressSanitizer" OFF)
 option(SERDEC_ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer" OFF)
