@@ -7,7 +7,7 @@
 
 #define SERDEC_DEFAULT_BUFFER_CAPACITY 100
 
-#ifdef _WIN32                                                                 
+#ifdef _WIN32
     #include <malloc.h>                                                       
     #define serdec_aligned_alloc(align, size) _aligned_malloc(size, align)    
     #define serdec_aligned_free(ptr)          _aligned_free(ptr)              
@@ -30,7 +30,7 @@ struct SerdecBuffer {
 };
 
 typedef struct ArenaBlock {
-    struct ArenaBlock* next;  // Linked list
+    struct ArenaBlock* next;
     size_t size;              // Block capacity
     size_t used;              // Bytes used
     char data[];              // Flexible array member (C99)
