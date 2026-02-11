@@ -4,6 +4,27 @@ A **Ser**ialization/**De**serialization library for JSON, in **C**.
 
 > **Status:** Work in progress
 
+## Architecture
+
+```
+┌─────────────────────────────────────────┐
+│   Layer 4: High-Level API               │
+│   (serdec_parse, serdec_stringify)      │
+├─────────────────────────────────────────┤
+│   Layer 3: DOM API                      │
+│   (object/array access, queries)        │
+├─────────────────────────────────────────┤
+│   Layer 2: SAX/Event API                │
+│   (callbacks, pull parser, streaming)   │
+├─────────────────────────────────────────┤
+│   Layer 1: Lexer/Parser Core            │  <-- In Progress
+│   (tokenization, structural validation) │
+├─────────────────────────────────────────┤
+│   Layer 0: Foundation                   │  <-- Done
+│   (memory, buffers, error handling)     │
+└─────────────────────────────────────────┘
+```
+
 ## Building
 
 Requires CMake 4.2.3+ and a C23 compiler.
