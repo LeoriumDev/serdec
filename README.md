@@ -1,19 +1,15 @@
 # serdec
-A lightweight serialization and deserialization C library for JSON.
+
+A **Ser**ialization/**De**serialization library for JSON, in **C**.
+
+> **Status:** Work in progress
 
 ## Building
 
 Requires CMake 4.2.3+ and a C23 compiler.
 
 ```bash
-# Configure
-cmake -B build
-
-# Build
-cmake --build build
-
-# Run tests
-ctest --test-dir build
+make build
 ```
 
 ### Build Options
@@ -24,26 +20,26 @@ ctest --test-dir build
 | `-DSERDEC_ENABLE_ASAN=ON` | Enable AddressSanitizer only |
 | `-DSERDEC_ENABLE_UBSAN=ON` | Enable UndefinedBehaviorSanitizer only |
 
-Development build with sanitizers:
-
-```bash
-cmake -B build -DSERDEC_ENABLE_SANITIZERS=ON
-cmake --build build
-```
-
 ## Testing
 
 ```bash
-# Run all tests via CTest
-ctest --test-dir build
+# Build and run all tests
+make test
 
-# Run directly
-./build/serdec_tests
+# Build with sanitizers and run tests
+make sanitize
 
 # Run specific suite
-./build/serdec_tests buffer
-ctest --test-dir build -R buffer
+./build/tests/serdec_tests buffer
+./build/tests/serdec_tests arena
+```
 
-# Verbose output
-ctest --test-dir build --output-on-failure
+## Development
+
+```bash
+make build     # Configure + build
+make test      # Build + run tests
+make sanitize  # Build with ASan/UBSan + run tests
+make clean     # Remove build directory
+make rebuild   # Clean + build
 ```
