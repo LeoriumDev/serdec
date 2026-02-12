@@ -9,7 +9,7 @@ add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 option(SERDEC_ENABLE_ASAN "Enable AddressSanitizer" OFF)
 option(SERDEC_ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer" OFF)
-option(SERDEC_ENABLE_SANITIZERS "Enable ASan + UBSan" OFF)
+option(SERDEC_ENABLE_SANITIZERS "Enable ASan + UBSan" ${BUILD_TESTING})
 
 if(SERDEC_ENABLE_SANITIZERS OR SERDEC_ENABLE_ASAN)
   add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
