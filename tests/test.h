@@ -26,7 +26,7 @@ static int _test_did_fail;
     _test_did_fail = 0;                                                        \
     {                                                                          \
         printf("    " CYAN("%s") " ", #name);                                  \
-        int _pad = 35 - (int)strlen(#name);                                    \
+        int _pad = 50 - (int)strlen(#name);                                    \
         for (int _i = 0; _i < _pad; _i++) printf(".");                         \
     }                                                                          \
     if (setjmp(_test_jmp) == 0) {                                              \

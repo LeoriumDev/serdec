@@ -1,6 +1,9 @@
 #include "internal.h"
+#include "serdec/error.h"
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
+#include <math.h>
 
 static SerdecToken make_error(SerdecLexer* lexer, SerdecError code) {
     if (!lexer) return (SerdecToken) { .type = SERDEC_TOKEN_ERROR };
@@ -49,6 +52,10 @@ static bool is_alnum(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
+static bool is_digit(char c) {
+    return (c >= '0' && c <= '9');
+}
+
 static SerdecToken lex_keyword(SerdecLexer* lexer, const char* keyword, SerdecTokenType type) {
     if (!lexer) return (SerdecToken) { .type = SERDEC_TOKEN_ERROR };
     const char* start_pos = lexer->current;
@@ -76,13 +83,168 @@ static SerdecToken lex_keyword(SerdecLexer* lexer, const char* keyword, SerdecTo
 }
 
 static SerdecToken lex_string(SerdecLexer* lexer) {
-    // TODO
+    if (!lexer) return (SerdecToken) { .type = SERDEC_TOKEN_ERROR };
+
+    const char* start_pos = lexer->current + 1;
+    bool has_escapes = false;
+    while (++lexer->current < lexer->end) {
+        lexer->column++;
+
+        // Control characters (bytes 0x00 to 0x1F)
+        if ((unsigned char) *lexer->current < 0x20)
+            return make_error(lexer, SERDEC_ERR_UNEXPECTED_CHAR);
+        
+        // Escape sequence
+        if (*lexer->current == '\\') {
+            // Not enough room for trailing quote
+            if (lexer->current + 1 >= lexer->end)
+                return make_error(lexer, SERDEC_ERR_INVALID_ESCAPE);
+
+            // Skip next character
+            lexer->current++;
+            lexer->column++;
+            has_escapes = true;
+            continue;
+        }
+        
+        if (*lexer->current == '"') {
+            lexer->column++; // Advance to the next character
+            return (SerdecToken) {
+                .type = SERDEC_TOKEN_STRING,
+                .start = start_pos,
+                // Calculate legnth before advancing 
+                .length = lexer->current++ - start_pos,
+                .string = { has_escapes }
+            };
+        }
+    }
+
     return make_error(lexer, SERDEC_ERR_UNTERMINATED_STRING);
 }
 
 static SerdecToken lex_number(SerdecLexer* lexer) {
-    // TODO
-    return make_error(lexer, SERDEC_ERR_INVALID_NUMBER);
+    if (!lexer) return (SerdecToken) { .type = SERDEC_TOKEN_ERROR };
+
+    const char* start_pos = lexer->current;
+    const char* digit_ptr = start_pos;
+    bool is_negative = false;
+    bool is_float = false;
+    bool negative_exp = false;
+
+    if (*lexer->current == '-') {
+        lexer->current++;
+        is_negative = true;
+        digit_ptr = lexer->current;
+        if (!is_digit(*lexer->current)) return make_error(lexer, SERDEC_ERR_INVALID_NUMBER);
+    } 
+    
+    if (*lexer->current == '0') {
+        lexer->current++;
+        if (is_digit(*lexer->current)) return make_error(lexer, SERDEC_ERR_INVALID_NUMBER);
+    }
+
+    while (is_digit(*lexer->current)) lexer->current++;
+
+    if (*lexer->current == '.') {
+        lexer->current++;
+        is_float = true;
+        if (!is_digit(*lexer->current)) return make_error(lexer, SERDEC_ERR_INVALID_NUMBER);
+        while (is_digit(*lexer->current)) lexer->current++;
+    }
+    
+    if (*lexer->current == 'e' || *lexer->current == 'E') {
+        lexer->current++;
+        is_float = true;
+
+        // Optional '+' and '-'
+        if (*lexer->current == '+') {
+            lexer->current++;
+            negative_exp = false;
+        } else if (*lexer->current == '-') {
+            lexer->current++;
+            negative_exp = true;
+        }
+
+        if (!is_digit(*lexer->current)) { return make_error(lexer, SERDEC_ERR_INVALID_NUMBER); }
+        while (is_digit(*lexer->current)) lexer->current++;
+    }
+
+    size_t length = lexer->current - start_pos;
+    lexer->column += length;
+
+    // integer conversion
+
+    uint64_t u64 = 0;
+    int64_t i64 = 0;
+    const char* digit_ptr1 = digit_ptr;
+
+    if (!is_float) {
+        while (is_digit(*digit_ptr1)) {
+            if (u64 > UINT64_MAX / 10 || (u64 == UINT64_MAX / 10 && ((unsigned long long) *digit_ptr1 - '0') > UINT64_MAX % 10))
+                return make_error(lexer, SERDEC_ERR_NUMBER_OVERFLOW);
+            u64 = u64 * 10 + (*digit_ptr1 - '0');
+            digit_ptr1++;
+        }
+
+        if (is_negative && u64 > (uint64_t)INT64_MAX + 1)
+            return make_error(lexer, SERDEC_ERR_NUMBER_OVERFLOW);
+
+        if (is_negative) i64 = -(int64_t) u64;
+    }
+
+    // float conversion
+
+    uint64_t whole = 0;
+    double frac = 0.0;
+    double divisor = 10.0;
+    int64_t power = 0;
+    double f64 = 0.0;
+    const char* digit_ptr2 = digit_ptr;
+
+    if (is_float) {
+        while (*digit_ptr2 != '.' &&
+               *digit_ptr2 != 'e' &&
+               *digit_ptr2 != 'E' &&
+               is_digit(*digit_ptr2)) {
+            if (whole > UINT64_MAX / 10 || (whole == UINT64_MAX / 10 && ((unsigned long long) *digit_ptr2 - '0') > UINT64_MAX % 10))
+                return make_error(lexer, SERDEC_ERR_NUMBER_OVERFLOW);
+            whole = whole * 10 + (*digit_ptr2 - '0');
+            digit_ptr2++;
+        }
+        if (*digit_ptr2 == '.') {
+            digit_ptr2++;
+            while (is_digit(*digit_ptr2)) {
+                frac += (*digit_ptr2 - '0') / divisor;
+                divisor *= 10.0;
+                digit_ptr2++;
+            }
+        }
+        
+        if (*digit_ptr2 == 'e' || *digit_ptr2 == 'E') {
+            digit_ptr2++;
+            if (*digit_ptr2 == '-' || *digit_ptr2 == '+')
+                digit_ptr2++;
+            while (is_digit(*digit_ptr2)) {
+                if (power > 308) { power = 309; break; }
+                power = power * 10 + (*digit_ptr2 - '0');
+                digit_ptr2++;
+            }
+            if (negative_exp) power = -power;
+        }
+
+        f64 = (whole + frac);
+        if (power != 0) f64 *= pow(10.0, power);
+        if (is_negative) f64 = -f64;
+    }
+
+    SerdecToken tok = { .type = SERDEC_TOKEN_NUMBER, .start = start_pos, .length = length };
+    tok.number.is_integer = !is_float;
+    tok.number.is_negative = is_negative;
+    if (is_float) tok.number.value.f64 = f64;
+    else if (is_negative) tok.number.value.i64 = i64;
+    else tok.number.value.u64 = u64;
+
+    return tok;
 }
 
 SerdecLexer* serdec_lexer_create(SerdecBuffer* buf) {
