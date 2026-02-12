@@ -189,7 +189,7 @@ static SerdecToken lex_number(SerdecLexer* lexer) {
         if (is_negative && u64 > (uint64_t)INT64_MAX + 1)
             return make_error(lexer, SERDEC_ERR_NUMBER_OVERFLOW);
 
-        if (is_negative) i64 = -(int64_t) u64;
+        if (is_negative) i64 = (int64_t) (~u64 + 1);
     }
 
     // float conversion

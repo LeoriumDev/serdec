@@ -100,6 +100,15 @@ typedef struct SerdecLexer {
     SerdecErrorInfo error;
 } SerdecLexer;
 
+// UTF-8 API
+int serdec_utf8_decode(const char* data, size_t len, uint32_t* codepoint);
+int serdec_utf8_encode(uint32_t codepoint, char* out);
+bool serdec_utf8_validate(const char* data, size_t len);
+
+// String API
+SerdecError serdec_string_unescape(SerdecArena* arena, const char* src, size_t len,
+                                    char** out, size_t* out_len);
+
 // Lexer API
 SerdecLexer* serdec_lexer_create(SerdecBuffer* buf);
 void serdec_lexer_destroy(SerdecLexer* lexer);
