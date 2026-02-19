@@ -59,12 +59,12 @@ typedef enum SerdecTokenType {
     SERDEC_TOKEN_FALSE,       // false
     SERDEC_TOKEN_NULL,        // null
     SERDEC_TOKEN_EOF,         // End of input
-    SERDEC_TOKEN_ERROR        // Lexer error
+    SERDEC_TOKEN_ERROR,       // Lexer error
 } SerdecTokenType;
 
 typedef struct SerdecToken {
     SerdecTokenType type;
-    const char *start;        // Points into original buffer
+    const char* start;        // Points into original buffer
     size_t length;            // Length of token text
 
     union {
@@ -85,9 +85,9 @@ typedef struct SerdecToken {
 } SerdecToken;
 
 typedef struct SerdecLexer {
-    const char *start;        // Start of buffer
-    const char *current;      // Current position
-    const char *end;          // End of logical input
+    const char* start;        // Start of buffer
+    const char* current;      // Current position
+    const char* end;          // End of logical input
 
     size_t line;              // Current line (1-indexed)
     size_t column;            // Current column (1-indexed)
@@ -108,6 +108,11 @@ bool serdec_utf8_validate(const char* data, size_t len);
 // String API
 SerdecError serdec_string_unescape(SerdecArena* arena, const char* src, size_t len,
                                     char** out, size_t* out_len);
+
+// Decode a borrowed string slice into arena-owned bytes.
+// Only allocates if s.has_escapes is true; otherwise points into the input.
+SerdecError serdec_string_materialize(SerdecArena* arena, SerdecString s,
+                                      const char** out, size_t* out_len);
 
 // Lexer API
 SerdecLexer* serdec_lexer_create(SerdecBuffer* buf);
