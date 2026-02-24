@@ -101,7 +101,10 @@ typedef struct SerdecLexer {
 } SerdecLexer;
 
 // UTF-8 API
+
+// Returns byte count (1–4) on success, 0 on error.
 int serdec_utf8_decode(const char* data, size_t len, uint32_t* codepoint);
+// Returns byte count (1–4), or 0 if invalid.
 int serdec_utf8_encode(uint32_t codepoint, char* out);
 bool serdec_utf8_validate(const char* data, size_t len);
 
