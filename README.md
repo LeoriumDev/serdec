@@ -88,7 +88,7 @@ zeros.
 ### `0.1.0` — Foundation, UTF-8 & string
 - [x] Arena allocator, buffer, error model
 - [x] Lexer core
-- [ ] UTF-8 validation (reject invalid, overlong, surrogates, out-of-range)
+- [x] UTF-8 validation (reject invalid, overlong, surrogates, out-of-range)
 - [ ] Unicode escape decoding for strings (`\uXXXX` + surrogate pairs)
 - [ ] JSON string unescape
 - [ ] CI passing
